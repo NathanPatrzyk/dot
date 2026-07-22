@@ -75,4 +75,29 @@ describe("TaskItem", () => {
       );
     });
   });
+
+  it("marks as reopened when unchecking a completed task", async () => {
+    const user = userEvent.setup();
+    let resolveToggle: () => void;
+    mockToggleTask.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveToggle = resolve;
+        }),
+    );
+
+    render(<TaskItem id={1} name="Tarefa 1" isCompleted={true} />);
+
+    await user.click(screen.getByRole("checkbox"));
+
+    await waitFor(() => {
+      expect(screen.getByRole("checkbox")).not.toBeChecked();
+    });
+
+    resolveToggle!();
+
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith("Tarefa 1 reaberta.");
+    });
+  });
 });

@@ -13,9 +13,9 @@ export default async function Tasks() {
   const { tasks, porcentage, completed, total } = await getTasks();
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex justify-between">
-        <h2 className="scroll-m-20 pb-4 text-3xl tracking-tight pt-8">
+    <div className="flex flex-col gap-6">
+      <div className="flex justify-between h-36">
+        <h2 className="text-3xl pt-8">
           <span className="font-semibold">dot</span> • Tarefas
         </h2>
         <WeatherWidget />

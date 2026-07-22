@@ -6,13 +6,11 @@ import { cn } from "@/lib/utils";
 
 function Progress({
   className,
+  indicatorClassName,
   children,
   value,
-  indicatorClassName,
   ...props
-}: ProgressPrimitive.Root.Props & {
-  indicatorClassName?: string;
-}) {
+}: ProgressPrimitive.Root.Props & { indicatorClassName?: string }) {
   return (
     <ProgressPrimitive.Root
       value={value}

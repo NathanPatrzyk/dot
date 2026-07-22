@@ -4,7 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,11 +35,11 @@ export default function RootLayout({
         geistSans.variable,
         geistMono.variable,
         "font-sans",
-        inter.variable,
+        geist.variable,
       )}
     >
       <body className="min-h-full flex flex-col dark pb-32">
-        <div className="max-w-[1024px] mx-auto w-full p-4 sm:p-8">
+        <div className="max-w-4xl mx-auto w-full p-4 sm:p-8">
           {children}
         </div>
         <Toaster />
