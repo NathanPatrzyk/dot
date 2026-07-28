@@ -1,6 +1,8 @@
-import { getTasks } from "@/queries/tasks";
-import { FieldGroup } from "@/components/ui/field";
-import { TaskItem } from "@/components/task-item";
+import {
+  getAllTasks,
+  getCompletedTasks,
+  getPendingTasks,
+} from "@/queries/tasks";
 import { TaskForm } from "@/components/task-form";
 import {
   Progress,
@@ -8,9 +10,14 @@ import {
   ProgressValue,
 } from "@/components/ui/progress";
 import WeatherWidget from "@/components/weather-widget";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LayoutList, ListChecks, ListTodo } from "lucide-react";
+import { TaskList } from "@/components/task-list";
 
 export default async function Tasks() {
-  const { tasks, porcentage, completed, total } = await getTasks();
+  const { allTasks, porcentage, completed, total } = await getAllTasks();
+  const { pendingTasks } = await getPendingTasks();
+  const { completedTasks } = await getCompletedTasks();
 
   return (
     <div className="flex flex-col gap-6">
@@ -34,16 +41,34 @@ export default async function Tasks() {
         <ProgressValue />
       </Progress>
 
-      <FieldGroup>
-        {tasks.map((task) => (
-          <TaskItem
-            key={task.id}
-            id={task.id}
-            name={task.name}
-            isCompleted={task.isCompleted}
-          />
-        ))}
-      </FieldGroup>
+      <Tabs defaultValue="all" className="flex flex-col gap-6">
+        <TabsList variant="line" className="w-full">
+          <TabsTrigger value="all">
+            <ListTodo />
+            Todas
+          </TabsTrigger>
+          <TabsTrigger value="pending">
+            <LayoutList />
+            Pendentes
+          </TabsTrigger>
+          <TabsTrigger value="completed">
+            <ListChecks />
+            Concluídas
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="all">
+          <TaskList tasks={allTasks} />
+        </TabsContent>
+
+        <TabsContent value="pending">
+          <TaskList tasks={pendingTasks} />
+        </TabsContent>
+
+        <TabsContent value="completed">
+          <TaskList tasks={completedTasks} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -1,11 +1,12 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { toggleTask } from "@/actions/tasks";
+import { deleteTask, toggleTask } from "@/actions/tasks";
 import { toast } from "sonner";
 import { TaskItem } from "./task-item";
 
 jest.mock("@/actions/tasks", () => ({
   toggleTask: jest.fn(),
+  deleteTask: jest.fn(),
 }));
 
 jest.mock("sonner", () => ({
@@ -16,6 +17,7 @@ jest.mock("sonner", () => ({
 }));
 
 const mockToggleTask = toggleTask as jest.Mock;
+const mockDeleteTask = deleteTask as jest.Mock;
 
 describe("TaskItem", () => {
   beforeEach(() => {
@@ -98,6 +100,56 @@ describe("TaskItem", () => {
 
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledWith("Tarefa 1 reaberta.");
+    });
+  });
+
+  it("deletes the task and calls onDelete optimistically", async () => {
+    const user = userEvent.setup();
+    const onDelete = jest.fn();
+    let resolveDelete: () => void;
+    mockDeleteTask.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveDelete = resolve;
+        }),
+    );
+
+    render(
+      <TaskItem
+        id={1}
+        name="Tarefa 1"
+        isCompleted={false}
+        onDelete={onDelete}
+      />,
+    );
+
+    await user.click(screen.getByRole("button"));
+
+    expect(onDelete).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(mockDeleteTask).toHaveBeenCalledWith(1);
+    });
+
+    resolveDelete!();
+
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith("Tarefa 1 excluída.");
+    });
+  });
+
+  it("shows an error toast when deleteTask fails", async () => {
+    const user = userEvent.setup();
+    mockDeleteTask.mockRejectedValue(new Error("fail"));
+
+    render(<TaskItem id={1} name="Tarefa 1" isCompleted={false} />);
+
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        "Não foi possível excluir a tarefa.",
+      );
     });
   });
 });

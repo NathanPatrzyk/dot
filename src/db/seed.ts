@@ -14,6 +14,7 @@ async function main() {
       columns: {
         name: f.loremIpsum({ sentencesCount: 1 }),
         isCompleted: f.boolean(),
+        deletedAt: f.default({ defaultValue: null }),
       },
       count: 20,
     },

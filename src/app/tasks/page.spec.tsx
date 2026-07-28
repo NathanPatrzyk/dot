@@ -1,13 +1,21 @@
 import { render, screen } from "@testing-library/react";
-import { getTasks } from "@/queries/tasks";
+import {
+  getAllTasks,
+  getPendingTasks,
+  getCompletedTasks,
+} from "@/queries/tasks";
 import Tasks from "./page";
 
 jest.mock("@/queries/tasks", () => ({
-  getTasks: jest.fn(),
+  getAllTasks: jest.fn(),
+  getPendingTasks: jest.fn(),
+  getCompletedTasks: jest.fn(),
 }));
 
-jest.mock("@/components/task-item", () => ({
-  TaskItem: ({ name }: { name: string }) => <div>{name}</div>,
+jest.mock("@/components/task-list", () => ({
+  TaskList: ({ tasks }: { tasks: { name: string }[] }) => (
+    <div>{tasks.map((task) => task.name).join(", ")}</div>
+  ),
 }));
 
 jest.mock("@/components/task-form", () => ({
@@ -19,16 +27,24 @@ jest.mock("@/components/weather-widget", () => ({
   default: () => <div>WeatherWidget</div>,
 }));
 
-const mockGetTasks = getTasks as jest.Mock;
+const mockGetAllTasks = getAllTasks as jest.Mock;
+const mockGetPendingTasks = getPendingTasks as jest.Mock;
+const mockGetCompletedTasks = getCompletedTasks as jest.Mock;
 
 describe("Tasks", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("renders the title, weather widget, form and progress", async () => {
-    mockGetTasks.mockResolvedValue({
-      tasks: [],
+    mockGetAllTasks.mockResolvedValue({
+      allTasks: [],
       porcentage: 0,
       completed: 0,
       total: 0,
     });
+    mockGetPendingTasks.mockResolvedValue({ pendingTasks: [] });
+    mockGetCompletedTasks.mockResolvedValue({ completedTasks: [] });
 
     const jsx = await Tasks();
     render(jsx);
@@ -41,22 +57,25 @@ describe("Tasks", () => {
     expect(screen.getByText("0/0")).toBeInTheDocument();
   });
 
-  it("renders one item per task when lat/lon are present", async () => {
-    mockGetTasks.mockResolvedValue({
-      tasks: [
-        { id: "1", name: "Tarefa 1", isCompleted: false },
-        { id: "2", name: "Tarefa 2", isCompleted: true },
-      ],
-      porcentage: 50,
-      completed: 1,
-      total: 2,
+  it("renders tabs for all, pending and completed tasks", async () => {
+    mockGetAllTasks.mockResolvedValue({
+      allTasks: [{ id: 1, name: "Tarefa 1", isCompleted: false }],
+      porcentage: 0,
+      completed: 0,
+      total: 1,
+    });
+    mockGetPendingTasks.mockResolvedValue({
+      pendingTasks: [{ id: 1, name: "Tarefa 1", isCompleted: false }],
+    });
+    mockGetCompletedTasks.mockResolvedValue({
+      completedTasks: [{ id: 2, name: "Tarefa 2", isCompleted: true }],
     });
 
     const jsx = await Tasks();
     render(jsx);
 
-    expect(screen.getByText("Tarefa 1")).toBeInTheDocument();
-    expect(screen.getByText("Tarefa 2")).toBeInTheDocument();
-    expect(screen.getByText("1/2")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Todas/ })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Pendentes/ })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Concluídas/ })).toBeInTheDocument();
   });
 });

@@ -1,6 +1,6 @@
 import { db, taskInsertSchema } from "@/db";
 import { revalidatePath } from "next/cache";
-import { toggleTask, createTask } from "./tasks";
+import { toggleTask, createTask, deleteTask } from "./tasks";
 
 jest.mock("@/db", () => ({
   db: {
@@ -56,6 +56,25 @@ describe("toggleTask", () => {
     mockFindFirst.mockResolvedValue(undefined);
 
     await expect(toggleTask(999)).rejects.toThrow("Tarefa não encontrada.");
+  });
+});
+
+describe("deleteTask", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("soft deletes the task by setting deletedAt and revalidates", async () => {
+    const whereMock = jest.fn().mockResolvedValue(undefined);
+    const setMock = jest.fn().mockReturnValue({ where: whereMock });
+    mockUpdate.mockReturnValue({ set: setMock });
+
+    await deleteTask(1);
+
+    expect(setMock).toHaveBeenCalledWith({
+      deletedAt: expect.any(Date),
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/");
   });
 });
 

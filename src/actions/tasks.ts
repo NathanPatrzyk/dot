@@ -1,6 +1,6 @@
 "use server";
 
-import { db, taskInsertSchema, tasks, taskUpdateSchema } from "@/db";
+import { db, taskInsertSchema, tasks } from "@/db";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { UpdateTaskInput, CreateTaskInput } from "@/types/tasks";
@@ -18,12 +18,21 @@ export async function toggleTask(id: number) {
     throw new Error("Tarefa não encontrada.");
   }
 
-  await db
-    .update(tasks)
-    .set({
-      isCompleted: !task.isCompleted,
-    })
-    .where(eq(tasks.id, id));
+  const data: UpdateTaskInput = {
+    isCompleted: !task.isCompleted,
+  };
+
+  await db.update(tasks).set(data).where(eq(tasks.id, id));
+
+  revalidatePath("/");
+}
+
+export async function deleteTask(id: number) {
+  const data: UpdateTaskInput = {
+    deletedAt: new Date(),
+  };
+
+  await db.update(tasks).set(data).where(eq(tasks.id, id));
 
   revalidatePath("/");
 }

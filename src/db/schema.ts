@@ -1,8 +1,9 @@
+import { sql } from "drizzle-orm";
 import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 import {
   createInsertSchema,
-  createSelectSchema,
   createUpdateSchema,
+  createSelectSchema,
 } from "drizzle-zod";
 
 export const tasks = sqliteTable("tasks", {
@@ -11,16 +12,27 @@ export const tasks = sqliteTable("tasks", {
   isCompleted: integer("is_completed", { mode: "boolean" })
     .notNull()
     .default(false),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  deletedAt: integer("deleted_at", { mode: "timestamp" }),
 });
-
-export const taskSelectSchema = createSelectSchema(tasks);
 
 export const taskInsertSchema = createInsertSchema(tasks, {
   name: (schema) => schema.min(1).max(255),
-}).omit({ id: true, isCompleted: true });
+}).omit({ id: true, isCompleted: true, createdAt: true, deletedAt: true });
 
 export const taskUpdateSchema = createUpdateSchema(tasks, {
   name: (schema) => schema.min(1).max(255),
+  deletedAt: (schema) =>
+    schema.refine(
+      (date) => date === null || date.getTime() <= Date.now() + 5000,
+      {
+        message: "A data de exclusão não pode ser no futuro.",
+      },
+    ),
 })
-  .omit({ id: true })
+  .omit({ id: true, createdAt: true })
   .partial();
+
+export const taskSelectSchema = createSelectSchema(tasks);
