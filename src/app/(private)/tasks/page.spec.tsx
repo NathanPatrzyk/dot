@@ -1,10 +1,22 @@
 import { render, screen } from "@testing-library/react";
+
 import {
   getAllTasks,
   getPendingTasks,
   getCompletedTasks,
 } from "@/queries/tasks";
+
 import Tasks from "./page";
+
+jest.mock("@/lib/require-session", () => ({
+  requireSession: jest.fn().mockResolvedValue({
+    user: {
+      id: "user-1",
+      name: "Nathan",
+      email: "nathan@example.com",
+    },
+  }),
+}));
 
 jest.mock("@/queries/tasks", () => ({
   getAllTasks: jest.fn(),
@@ -43,39 +55,74 @@ describe("Tasks", () => {
       completed: 0,
       total: 0,
     });
-    mockGetPendingTasks.mockResolvedValue({ pendingTasks: [] });
-    mockGetCompletedTasks.mockResolvedValue({ completedTasks: [] });
+
+    mockGetPendingTasks.mockResolvedValue({
+      pendingTasks: [],
+    });
+
+    mockGetCompletedTasks.mockResolvedValue({
+      completedTasks: [],
+    });
 
     const jsx = await Tasks();
+
     render(jsx);
 
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
       "dot • Tarefas",
     );
+
     expect(screen.getByText("WeatherWidget")).toBeInTheDocument();
+
     expect(screen.getByText("TaskForm")).toBeInTheDocument();
+
     expect(screen.getByText("0/0")).toBeInTheDocument();
   });
 
   it("renders tabs for all, pending and completed tasks", async () => {
     mockGetAllTasks.mockResolvedValue({
-      allTasks: [{ id: 1, name: "Tarefa 1", isCompleted: false }],
+      allTasks: [
+        {
+          id: 1,
+          name: "Tarefa 1",
+          isCompleted: false,
+        },
+      ],
       porcentage: 0,
       completed: 0,
       total: 1,
     });
+
     mockGetPendingTasks.mockResolvedValue({
-      pendingTasks: [{ id: 1, name: "Tarefa 1", isCompleted: false }],
+      pendingTasks: [
+        {
+          id: 1,
+          name: "Tarefa 1",
+          isCompleted: false,
+        },
+      ],
     });
+
     mockGetCompletedTasks.mockResolvedValue({
-      completedTasks: [{ id: 2, name: "Tarefa 2", isCompleted: true }],
+      completedTasks: [
+        {
+          id: 2,
+          name: "Tarefa 2",
+          isCompleted: true,
+        },
+      ],
     });
 
     const jsx = await Tasks();
+
     render(jsx);
 
-    expect(screen.getByRole("tab", { name: /Todas/ })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /Pendentes/ })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /Concluídas/ })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Todas/i })).toBeInTheDocument();
+
+    expect(screen.getByRole("tab", { name: /Pendentes/i })).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("tab", { name: /Concluídas/i }),
+    ).toBeInTheDocument();
   });
 });

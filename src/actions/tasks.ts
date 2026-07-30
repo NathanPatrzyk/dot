@@ -73,6 +73,13 @@ export async function createTask(
     })
     .returning();
 
+  if (!task) {
+    return {
+      success: false,
+      message: "Erro ao criar tarefa.",
+    };
+  }
+
   revalidatePath("/tasks");
 
   return {
