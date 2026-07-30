@@ -1,11 +1,12 @@
 import { db, tasks } from "@/db";
+import { requireSession } from "@/lib/require-session";
 import { and, desc, eq, isNull } from "drizzle-orm";
 
-export async function getAllTasks() {
+export async function getAllTasks(userId: string) {
   const allTasks = await db
     .select()
     .from(tasks)
-    .where(isNull(tasks.deletedAt))
+    .where(and(eq(tasks.userId, userId), isNull(tasks.deletedAt)))
     .orderBy(desc(tasks.id));
 
   const total = allTasks.length;
@@ -20,11 +21,17 @@ export async function getAllTasks() {
   };
 }
 
-export async function getPendingTasks() {
+export async function getPendingTasks(userId: string) {
   const pendingTasks = await db
     .select()
     .from(tasks)
-    .where(and(eq(tasks.isCompleted, false), isNull(tasks.deletedAt)))
+    .where(
+      and(
+        eq(tasks.userId, userId),
+        eq(tasks.isCompleted, false),
+        isNull(tasks.deletedAt),
+      ),
+    )
     .orderBy(desc(tasks.id));
 
   return {
@@ -32,11 +39,17 @@ export async function getPendingTasks() {
   };
 }
 
-export async function getCompletedTasks() {
+export async function getCompletedTasks(userId: string) {
   const completedTasks = await db
     .select()
     .from(tasks)
-    .where(and(eq(tasks.isCompleted, true), isNull(tasks.deletedAt)))
+    .where(
+      and(
+        eq(tasks.userId, userId),
+        eq(tasks.isCompleted, true),
+        isNull(tasks.deletedAt),
+      ),
+    )
     .orderBy(desc(tasks.id));
 
   return {

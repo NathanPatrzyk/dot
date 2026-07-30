@@ -13,18 +13,24 @@ import WeatherWidget from "@/components/weather-widget";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LayoutList, ListChecks, ListTodo } from "lucide-react";
 import { TaskList } from "@/components/task-list";
+import { requireSession } from "@/lib/require-session";
 
 export default async function Tasks() {
-  const { allTasks, porcentage, completed, total } = await getAllTasks();
-  const { pendingTasks } = await getPendingTasks();
-  const { completedTasks } = await getCompletedTasks();
+  const { user } = await requireSession();
+
+  const { allTasks, porcentage, completed, total } = await getAllTasks(user.id);
+  const { pendingTasks } = await getPendingTasks(user.id);
+  const { completedTasks } = await getCompletedTasks(user.id);
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between h-36">
-        <h2 className="text-3xl pt-8">
-          <span className="font-semibold">dot</span> • Tarefas
-        </h2>
+        <div>
+          <p>Bem-vindo, {user.name}</p>
+          <h2 className="text-3xl pt-8">
+            <span className="font-semibold">dot</span> • Tarefas
+          </h2>
+        </div>
         <WeatherWidget />
       </div>
 
