@@ -1,5 +1,4 @@
 import { db, tasks } from "@/db";
-import { requireSession } from "@/lib/require-session";
 import { and, desc, eq, isNull } from "drizzle-orm";
 
 export async function getAllTasks(userId: string) {
