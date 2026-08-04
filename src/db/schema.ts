@@ -35,7 +35,10 @@ export const tasks = sqliteTable("tasks", {
 });
 
 export const taskInsertSchema = createInsertSchema(tasks, {
-  name: (schema) => schema.min(1).max(255),
+  name: (schema) => 
+    schema
+      .min(1, "O nome é obrigatório.")
+      .max(255, "O nome deve ter no máximo 255 caracteres."),
 }).omit({
   id: true,
   isCompleted: true,

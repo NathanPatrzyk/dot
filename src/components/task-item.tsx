@@ -50,28 +50,30 @@ export function TaskItem({ id, name, isCompleted, onDelete }: TaskItemProps) {
   }
 
   return (
-    <Field orientation="horizontal" className="group">
+    <Field orientation="horizontal" className="group min-w-0">
       <Checkbox
         id={`task-${id}`}
         name={`task-${id}`}
-        className="py-2 cursor-pointer aria-invalid:aria-checked:border-green-500 data-checked:border-green-500 data-checked:bg-green-500 data-checked:text-white dark:data-checked:bg-green-500"
+        className="py-2 cursor-pointer shrink-0 aria-invalid:aria-checked:border-green-500 data-checked:border-green-500 data-checked:bg-green-500 data-checked:text-white dark:data-checked:bg-green-500"
         checked={optimisticCompleted}
         onCheckedChange={(value) => handleCheckedChange(value === true)}
       />
       <FieldLabel
         htmlFor={`task-${id}`}
         className={cn(
-          optimisticCompleted && "line-through text-muted-foreground",
-          "py-2 cursor-pointer",
+          optimisticCompleted && "text-muted-foreground",
+          "py-2 cursor-pointer flex-1 min-w-0",
         )}
       >
-        {name}
+        <span className={cn("truncate", optimisticCompleted && "line-through")}>
+          {name}
+        </span>
       </FieldLabel>
       <Button
         size="icon"
         variant="ghost"
         onClick={handleDelete}
-        className="opacity-0 group-hover:opacity-100 transition-opacity"
+        className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
       >
         <X className="size-5 text-neutral-500" />
       </Button>

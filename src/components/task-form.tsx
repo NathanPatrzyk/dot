@@ -29,8 +29,20 @@ export function TaskForm() {
   return (
     <form action={formAction} className="flex gap-2">
       <Input name="name" placeholder="Nova tarefa" />
-      <Button type="submit" size="icon">
-        {pending ? <Spinner /> : <PlusIcon />}
+      <Button
+        type="submit"
+        disabled={pending}
+        className="transition-all duration-200"
+      >
+        {pending ? (
+          <>
+            <Spinner /> Criar
+          </>
+        ) : (
+          <>
+            <PlusIcon /> Criar
+          </>
+        )}
       </Button>
     </form>
   );
