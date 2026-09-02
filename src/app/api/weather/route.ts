@@ -1,4 +1,8 @@
 export async function GET(request: Request) {
+  if (process.env.OPENWEATHER_ENABLED !== "true") {
+    return new Response(null, { status: 404 });
+  }
+
   const { searchParams } = new URL(request.url);
   const lat = searchParams.get("lat");
   const lon = searchParams.get("lon");

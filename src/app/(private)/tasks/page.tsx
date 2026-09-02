@@ -16,6 +16,7 @@ import { TaskList } from "@/components/task-list";
 import { requireSession } from "@/lib/require-session";
 import { Button } from "@/components/ui/button";
 import { LogoutButton } from "@/components/logout-button";
+import { RequestUserDeletionDialog } from "@/components/request-user-deletion-dialog";
 
 export default async function Tasks() {
   const { user } = await requireSession();
@@ -32,12 +33,7 @@ export default async function Tasks() {
             <p>Bem-vindo, {user.name}</p>
             <div className="flex gap-1">
               <LogoutButton />
-              <Button
-                className="hover:bg-destructive/10 text-destructive hover:text-destructive focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:hover:bg-destructive/20 dark:focus-visible:ring-destructive/40"
-                variant="ghost"
-              >
-                <UserRoundX /> Excluir conta
-              </Button>
+              <RequestUserDeletionDialog />
             </div>
           </div>
           <h2 className="text-3xl pt-8">
@@ -45,7 +41,7 @@ export default async function Tasks() {
           </h2>
         </div>
         <div>
-          <WeatherWidget />
+          {process.env.OPENWEATHER_ENABLED === "true" && <WeatherWidget />}
         </div>
       </div>
 

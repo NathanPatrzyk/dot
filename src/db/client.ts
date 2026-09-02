@@ -1,19 +1,7 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
+import { env } from "cloudflare:workers";
+import { drizzle } from "drizzle-orm/d1";
 import * as schema from "./schema";
 
-const globalForDb = globalThis as unknown as {
-  sqlite: Database.Database | undefined;
-};
-
-const sqlite =
-  globalForDb.sqlite ??
-  new Database(process.env.DATABASE_URL ?? "./data/app.db");
-
-sqlite.pragma("journal_mode = WAL");
-
-if (process.env.NODE_ENV !== "production") {
-  globalForDb.sqlite = sqlite;
+export function getDb() {
+  return drizzle(env.dot_db, { schema });
 }
-
-export const db = drizzle(sqlite, { schema });

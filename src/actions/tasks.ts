@@ -1,6 +1,6 @@
 "use server";
 
-import { db, taskInsertSchema, tasks } from "@/db";
+import { getDb, taskInsertSchema, tasks } from "@/db";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { UpdateTaskInput, CreateTaskInput } from "@/types/tasks";
@@ -10,7 +10,11 @@ import { requireSession } from "@/lib/require-session";
 export async function toggleTask(id: number) {
   const { user } = await requireSession();
 
-  const task = await db.query.tasks.findFirst({
+  if (!id || typeof id !== "number") {
+    throw new Error("Id inválido.");
+  }
+
+  const task = await getDb().query.tasks.findFirst({
     where: and(eq(tasks.id, id), eq(tasks.userId, user.id)),
     columns: {
       isCompleted: true,
@@ -25,7 +29,7 @@ export async function toggleTask(id: number) {
     isCompleted: !task.isCompleted,
   };
 
-  await db
+  await getDb()
     .update(tasks)
     .set(data)
     .where(and(eq(tasks.id, id), eq(tasks.userId, user.id)));
@@ -36,11 +40,15 @@ export async function toggleTask(id: number) {
 export async function deleteTask(id: number) {
   const { user } = await requireSession();
 
+  if (!id || typeof id !== "number") {
+    throw new Error("Id inválido.");
+  }
+
   const data: UpdateTaskInput = {
     deletedAt: new Date(),
   };
 
-  await db
+  await getDb()
     .update(tasks)
     .set(data)
     .where(and(eq(tasks.id, id), eq(tasks.userId, user.id)));
@@ -54,6 +62,13 @@ export async function createTask(
 ): Promise<ActionState<CreateTaskInput>> {
   const { user } = await requireSession();
 
+  if (!(formData instanceof FormData)) {
+    return {
+      success: false,
+      message: "Dados inválidos.",
+    };
+  }
+
   const data = Object.fromEntries(formData);
 
   const parsed = taskInsertSchema.safeParse(data);
@@ -65,7 +80,7 @@ export async function createTask(
     };
   }
 
-  const [task] = await db
+  const [task] = await getDb()
     .insert(tasks)
     .values({
       ...parsed.data,

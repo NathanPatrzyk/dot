@@ -1,8 +1,8 @@
-import { db, tasks } from "@/db";
+import { getDb, tasks } from "@/db";
 import { and, desc, eq, isNull } from "drizzle-orm";
 
 export async function getAllTasks(userId: string) {
-  const allTasks = await db
+  const allTasks = await getDb()
     .select()
     .from(tasks)
     .where(and(eq(tasks.userId, userId), isNull(tasks.deletedAt)))
@@ -21,7 +21,7 @@ export async function getAllTasks(userId: string) {
 }
 
 export async function getPendingTasks(userId: string) {
-  const pendingTasks = await db
+  const pendingTasks = await getDb()
     .select()
     .from(tasks)
     .where(
@@ -39,7 +39,7 @@ export async function getPendingTasks(userId: string) {
 }
 
 export async function getCompletedTasks(userId: string) {
-  const completedTasks = await db
+  const completedTasks = await getDb()
     .select()
     .from(tasks)
     .where(

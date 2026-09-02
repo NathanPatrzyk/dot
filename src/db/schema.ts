@@ -31,11 +31,11 @@ export const tasks = sqliteTable("tasks", {
 
   userId: text("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => users.id, { onDelete: "cascade" }),
 });
 
 export const taskInsertSchema = createInsertSchema(tasks, {
-  name: (schema) => 
+  name: (schema) =>
     schema
       .min(1, "O nome é obrigatório.")
       .max(255, "O nome deve ter no máximo 255 caracteres."),
@@ -66,7 +66,7 @@ export const taskUpdateSchema = createUpdateSchema(tasks, {
 
 export const taskSelectSchema = createSelectSchema(tasks);
 
-export const user = sqliteTable("user", {
+export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
@@ -74,17 +74,30 @@ export const user = sqliteTable("user", {
     .default(false)
     .notNull(),
   image: text("image"),
+  status: text("status", { enum: ["active", "pending_deletion"] })
+    .notNull()
+    .default("active"),
+  deletionRequestedAt: integer("deletion_requested_at", {
+    mode: "timestamp_ms",
+  }),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" })
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .$onUpdate(() => new Date())
     .notNull(),
 });
 
-export const session = sqliteTable(
-  "session",
+export const userUpdateSchema = createUpdateSchema(users)
+  .omit({
+    id: true,
+    createdAt: true,
+  })
+  .partial();
+
+export const sessions = sqliteTable(
+  "sessions",
   {
     id: text("id").primaryKey(),
     expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
@@ -99,20 +112,20 @@ export const session = sqliteTable(
     userAgent: text("user_agent"),
     userId: text("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
   },
   (table) => [index("session_userId_idx").on(table.userId)],
 );
 
-export const account = sqliteTable(
-  "account",
+export const accounts = sqliteTable(
+  "accounts",
   {
     id: text("id").primaryKey(),
     accountId: text("account_id").notNull(),
     providerId: text("provider_id").notNull(),
     userId: text("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
     idToken: text("id_token"),
@@ -134,8 +147,8 @@ export const account = sqliteTable(
   (table) => [index("account_userId_idx").on(table.userId)],
 );
 
-export const verification = sqliteTable(
-  "verification",
+export const verifications = sqliteTable(
+  "verifications",
   {
     id: text("id").primaryKey(),
     identifier: text("identifier").notNull(),
@@ -152,29 +165,29 @@ export const verification = sqliteTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const userRelations = relations(user, ({ many }) => ({
-  sessions: many(session),
-  accounts: many(account),
+export const usersRelations = relations(users, ({ many }) => ({
+  sessions: many(sessions),
+  accounts: many(accounts),
   tasks: many(tasks),
 }));
 
-export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
-    fields: [session.userId],
-    references: [user.id],
+export const sessionRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
   }),
 }));
 
-export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, {
-    fields: [account.userId],
-    references: [user.id],
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
   }),
 }));
 
 export const taskRelations = relations(tasks, ({ one }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [tasks.userId],
-    references: [user.id],
+    references: [users.id],
   }),
 }));
