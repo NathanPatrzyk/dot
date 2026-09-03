@@ -11,13 +11,6 @@ export function getAuth() {
       usePlural: true,
     }),
 
-    session: {
-      cookieCache: {
-        enabled: true,
-        maxAge: 5 * 60,
-      },
-    },
-
     user: {
       additionalFields: {
         status: {

@@ -11,10 +11,9 @@ import {
 } from "@/components/ui/progress";
 import WeatherWidget from "@/components/weather-widget";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutList, ListChecks, ListTodo, UserRoundX } from "lucide-react";
+import { LayoutList, ListChecks, ListTodo } from "lucide-react";
 import { TaskList } from "@/components/task-list";
 import { requireSession } from "@/lib/require-session";
-import { Button } from "@/components/ui/button";
 import { LogoutButton } from "@/components/logout-button";
 import { RequestUserDeletionDialog } from "@/components/request-user-deletion-dialog";
 

@@ -3,7 +3,7 @@
   "name": "dot",
   "compatibility_date": "2026-08-29",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "vinext/server/fetch-handler",
+  "main": "worker/index.ts",
   "assets": {
     "directory": "dist/client",
     "not_found_handling": "none",
@@ -26,4 +26,7 @@
       "migrations_dir": "drizzle",
     },
   ],
+  "triggers": {
+    "crons": ["0 3 * * *"],
+  },
 }

@@ -18,3 +18,16 @@ export async function requestUserDeletion() {
 
   redirect("/login");
 }
+
+export async function cancelUserDeletion() {
+  const { user } = await requireSession();
+
+  const data: UpdateUserInput = {
+    status: "active",
+    deletionRequestedAt: null,
+  };
+
+  await getDb().update(users).set(data).where(eq(users.id, user.id));
+
+  redirect("/tasks");
+}
