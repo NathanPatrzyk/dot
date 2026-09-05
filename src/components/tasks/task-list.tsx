@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
 import { Task } from "@/types/tasks";
 import { useOptimistic } from "react";
-import { FieldGroup } from "./ui/field";
+import { FieldGroup } from "../ui/field";
 import { TaskItem } from "./task-item";
 
 type TaskListProps = {
