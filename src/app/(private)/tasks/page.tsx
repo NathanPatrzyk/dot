@@ -1,28 +1,14 @@
-import {
-  getAllTasks,
-  getCompletedTasks,
-  getPendingTasks,
-} from "@/queries/tasks";
-import { TaskForm } from "@/components/task-form";
-import {
-  Progress,
-  ProgressLabel,
-  ProgressValue,
-} from "@/components/ui/progress";
-import WeatherWidget from "@/components/weather-widget";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutList, ListChecks, ListTodo } from "lucide-react";
-import { TaskList } from "@/components/task-list";
+import { LogoutButton } from "@/components/shared/logout-button";
+import WeatherWidget from "@/components/shared/weather-widget";
+import { TaskContainer } from "@/components/tasks/task-container";
+import { Button } from "@/components/ui/button";
 import { requireSession } from "@/lib/require-session";
-import { LogoutButton } from "@/components/logout-button";
-import { RequestUserDeletionDialog } from "@/components/request-user-deletion-dialog";
+import { getTasks } from "@/queries/tasks";
+import { UserRoundX } from "lucide-react";
 
 export default async function Tasks() {
   const { user } = await requireSession();
-
-  const { allTasks, porcentage, completed, total } = await getAllTasks(user.id);
-  const { pendingTasks } = await getPendingTasks(user.id);
-  const { completedTasks } = await getCompletedTasks(user.id);
+  const tasks = await getTasks(user.id);
 
   return (
     <div className="flex flex-col gap-6">
@@ -32,7 +18,12 @@ export default async function Tasks() {
             <p>Bem-vindo, {user.name}</p>
             <div className="flex gap-1">
               <LogoutButton />
-              <RequestUserDeletionDialog />
+              <Button
+                className="hover:bg-destructive/10 text-destructive hover:text-destructive focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:hover:bg-destructive/20 dark:focus-visible:ring-destructive/40"
+                variant="ghost"
+              >
+                <UserRoundX /> Excluir conta
+              </Button>
             </div>
           </div>
           <h2 className="text-3xl pt-8">
@@ -40,51 +31,11 @@ export default async function Tasks() {
           </h2>
         </div>
         <div>
-          {process.env.OPENWEATHER_ENABLED === "true" && <WeatherWidget />}
+          <WeatherWidget />
         </div>
       </div>
 
-      <TaskForm />
-
-      <Progress
-        value={porcentage}
-        className="w-full"
-        indicatorClassName="bg-green-500"
-      >
-        <ProgressLabel>
-          {completed}/{total}
-        </ProgressLabel>
-        <ProgressValue />
-      </Progress>
-
-      <Tabs defaultValue="all" className="flex flex-col gap-6">
-        <TabsList variant="line" className="w-full">
-          <TabsTrigger value="all">
-            <ListTodo />
-            Todas
-          </TabsTrigger>
-          <TabsTrigger value="pending">
-            <LayoutList />
-            Pendentes
-          </TabsTrigger>
-          <TabsTrigger value="completed">
-            <ListChecks />
-            Concluídas
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="all">
-          <TaskList tasks={allTasks} />
-        </TabsContent>
-
-        <TabsContent value="pending">
-          <TaskList tasks={pendingTasks} />
-        </TabsContent>
-
-        <TabsContent value="completed">
-          <TaskList tasks={completedTasks} />
-        </TabsContent>
-      </Tabs>
+      <TaskContainer tasks={tasks} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { ReactivateUserButton } from "@/components/reactivate-user-button";
+import { ReactivateUserButton } from "@/components/shared/reactivate-user-button";
 import { requireSession } from "@/lib/require-session";
 
 export default async function ReactivateUser() {
@@ -7,9 +7,9 @@ export default async function ReactivateUser() {
   const requestedAt = new Date(user.deletionRequestedAt!);
   const deadline = new Date(requestedAt.getTime() + 2592000000);
   const daysLeft = Math.max(
-  0,
-  Math.ceil((deadline.getTime() - Date.now()) / 86400000),
-);
+    0,
+    Math.ceil((deadline.getTime() - Date.now()) / 86400000),
+  );
 
   return (
     <div className="flex flex-col gap-6 items-center justify-center pt-32">

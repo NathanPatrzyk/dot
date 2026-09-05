@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { GoogleButton } from "@/components/google-button";
+import { GoogleButton } from "@/components/shared/google-button";
 import Link from "next/link";
 
 export default function Login() {

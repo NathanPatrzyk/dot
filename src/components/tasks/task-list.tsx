@@ -1,29 +1,26 @@
 "use client";
 
-import { Task } from "@/types/tasks";
-import { useOptimistic } from "react";
+import { TaskView } from "@/types/tasks";
 import { FieldGroup } from "@/components/ui/field";
 import { TaskItem } from "@/components/tasks/task-item";
 
 type TaskListProps = {
-  tasks: Task[];
+  tasks: TaskView[];
+  onToggle: (id: number, name: string, value: boolean) => void;
+  onDelete: (id: number, name: string) => void;
 };
 
-export function TaskList({ tasks }: TaskListProps) {
-  const [optimisticTasks, removeTaskOptimistically] = useOptimistic(
-    tasks,
-    (state, id: number) => state.filter((task) => task.id !== id),
-  );
-
+export function TaskList({ tasks, onToggle, onDelete }: TaskListProps) {
   return (
     <FieldGroup>
-      {optimisticTasks.map((task) => (
+      {tasks.map((task) => (
         <TaskItem
           key={task.id}
           id={task.id}
           name={task.name}
           isCompleted={task.isCompleted}
-          onDelete={() => removeTaskOptimistically(task.id)}
+          onToggle={(value) => onToggle(task.id, task.name, value)}
+          onDelete={() => onDelete(task.id, task.name)}
         />
       ))}
     </FieldGroup>

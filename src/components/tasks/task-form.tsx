@@ -3,46 +3,28 @@
 import { PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createTask } from "@/actions/tasks";
-import { useActionState, useEffect } from "react";
-import { toast } from "sonner";
-import { Spinner } from "@/components/ui/spinner";
 
-const initialState = {
-  success: false,
-  message: "",
+type TaskFormProps = {
+  action: (formData: FormData) => void;
+  pending: boolean;
 };
 
-export function TaskForm() {
-  const [state, formAction, pending] = useActionState(createTask, initialState);
+export function TaskForm({ action }: TaskFormProps) {
+  function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-  useEffect(() => {
-    if (state.message) {
-      if (state.success) {
-        toast.success(state.message);
-      } else {
-        toast.error(state.message);
-      }
-    }
-  }, [state]);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    action(formData);
+    form.reset();
+  }
 
   return (
-    <form action={formAction} className="flex gap-2">
+    <form onSubmit={handleSubmit} className="flex gap-2">
       <Input name="name" placeholder="Nova tarefa" />
-      <Button
-        type="submit"
-        disabled={pending}
-        className="transition-all duration-200"
-      >
-        {pending ? (
-          <>
-            <Spinner /> Criar
-          </>
-        ) : (
-          <>
-            <PlusIcon /> Criar
-          </>
-        )}
+      <Button type="submit" className="transition-all duration-200">
+        <PlusIcon /> Criar
       </Button>
     </form>
   );
