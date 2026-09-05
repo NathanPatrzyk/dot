@@ -2,8 +2,8 @@
 
 import { Task } from "@/types/tasks";
 import { useOptimistic } from "react";
-import { FieldGroup } from "../ui/field";
-import { TaskItem } from "./task-item";
+import { FieldGroup } from "@/components/ui/field";
+import { TaskItem } from "@/components/tasks/task-item";
 
 type TaskListProps = {
   tasks: Task[];

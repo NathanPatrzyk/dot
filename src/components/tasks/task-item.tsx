@@ -6,7 +6,7 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
 import { deleteTask, toggleTask } from "@/actions/tasks";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
 type TaskItemProps = {

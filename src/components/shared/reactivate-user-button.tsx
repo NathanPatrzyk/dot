@@ -1,9 +1,9 @@
 "use client";
 
 import { cancelUserDeletion } from "@/actions/users";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { useTransition } from "react";
-import { Spinner } from "./ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 import { UserRoundCheck } from "lucide-react";
 import { toast } from "sonner";
 import { isRedirectError } from "next/dist/client/components/redirect-error";

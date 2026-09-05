@@ -1,12 +1,12 @@
 "use client";
 
 import { PlusIcon } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { createTask } from "@/actions/tasks";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import { Spinner } from "./ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 
 const initialState = {
   success: false,
