@@ -1,5 +1,6 @@
 import { and, desc, eq, isNull } from "drizzle-orm";
-import { getDb, tasks } from "@/db";
+import { tasks } from "@/db";
+import { getDb } from "@/adapters/sqlite/client";
 
 export async function getTasks(userId: string) {
   return getDb()

@@ -1,4 +1,4 @@
-import { getDb } from "@/db";
+import { getDb } from "@/adapters";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import * as schema from "@/db/schema";

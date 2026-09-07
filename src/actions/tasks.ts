@@ -1,11 +1,12 @@
 "use server";
 
-import { getDb, taskInsertSchema, tasks } from "@/db";
-import { and, eq } from "drizzle-orm";
+import { taskInsertSchema } from "@/db";
 import { revalidatePath } from "next/cache";
-import { UpdateTaskInput, CreateTaskInput } from "@/types/tasks";
+import { CreateTaskInput } from "@/types/tasks";
 import { ActionState } from "@/types/action-state";
 import { requireSession } from "@/lib/require-session";
+import { createTasksService } from "@/core/services/tasks-service";
+import { getTaskRepository } from "@/adapters";
 
 export async function toggleTask(id: number) {
   const { user } = await requireSession();
@@ -14,25 +15,8 @@ export async function toggleTask(id: number) {
     throw new Error("Id inválido.");
   }
 
-  const task = await getDb().query.tasks.findFirst({
-    where: and(eq(tasks.id, id), eq(tasks.userId, user.id)),
-    columns: {
-      isCompleted: true,
-    },
-  });
-
-  if (!task) {
-    throw new Error("Tarefa não encontrada.");
-  }
-
-  const data: UpdateTaskInput = {
-    isCompleted: !task.isCompleted,
-  };
-
-  await getDb()
-    .update(tasks)
-    .set(data)
-    .where(and(eq(tasks.id, id), eq(tasks.userId, user.id)));
+  const tasksService = createTasksService(getTaskRepository());
+  await tasksService.toggleTask(id, user.id);
 
   revalidatePath("/tasks");
 }
@@ -44,14 +28,8 @@ export async function deleteTask(id: number) {
     throw new Error("Id inválido.");
   }
 
-  const data: UpdateTaskInput = {
-    deletedAt: new Date(),
-  };
-
-  await getDb()
-    .update(tasks)
-    .set(data)
-    .where(and(eq(tasks.id, id), eq(tasks.userId, user.id)));
+  const tasksService = createTasksService(getTaskRepository());
+  await tasksService.deleteTask(id, user.id);
 
   revalidatePath("/tasks");
 }
@@ -70,7 +48,6 @@ export async function createTask(
   }
 
   const data = Object.fromEntries(formData);
-
   const parsed = taskInsertSchema.safeParse(data);
 
   if (!parsed.success) {
@@ -80,13 +57,8 @@ export async function createTask(
     };
   }
 
-  const [task] = await getDb()
-    .insert(tasks)
-    .values({
-      ...parsed.data,
-      userId: user.id,
-    })
-    .returning();
+  const tasksService = createTasksService(getTaskRepository());
+  const task = await tasksService.createTask(parsed.data, user.id);
 
   if (!task) {
     return {

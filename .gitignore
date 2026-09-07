@@ -20,6 +20,7 @@
 
 # production
 /build
+src/adapters/index.ts
 
 # misc
 .DS_Store
@@ -45,6 +46,7 @@ next-env.d.ts
 # drizzle
 /data
 /drizzle
+/drizzle-homelab
 /dist/
 .vinext/
 .wrangler/

@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
-import * as schema from "./schema";
+import * as schema from "@/db/schema";
 
 export function getDb() {
   return drizzle(env.dot_db, { schema });
