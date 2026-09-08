@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { tasks } from "@/db/schema";
 import { getDb } from "./client";
 import { CommonTaskRepository } from "@/core/ports/common-task-repository";
@@ -14,6 +14,16 @@ export function createSqliteTaskRepository(): CommonTaskRepository {
     });
 
     return task ?? null;
+  }
+
+  async function findAllByUser(userId: string) {
+    const db = getDb();
+
+    return db.query.tasks.findMany({
+      where: and(eq(tasks.userId, userId), isNull(tasks.deletedAt)),
+      columns: { id: true, name: true, isCompleted: true },
+      orderBy: desc(tasks.id),
+    });
   }
 
   async function create(input: CreateTaskInput, userId: string) {
@@ -36,5 +46,5 @@ export function createSqliteTaskRepository(): CommonTaskRepository {
       .where(and(eq(tasks.id, id), eq(tasks.userId, userId)));
   }
 
-  return { findById, create, update };
+  return { findById, findAllByUser, create, update };
 }

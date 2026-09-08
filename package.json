@@ -15,6 +15,7 @@
     "db:generate:cloudflare": "drizzle-kit generate",
     "db:generate:homelab": "drizzle-kit generate --config drizzle.homelab.config.ts",
     "db:migrate:cloudflare": "wrangler d1 migrations apply dot-db",
+    "db:migrate:cloudflare:local": "wrangler d1 migrations apply dot-db --local --config dist/server/wrangler.json",
     "db:migrate:homelab": "drizzle-kit migrate --config drizzle.homelab.config.ts",
     "db:studio": "drizzle-kit studio",
     "lint": "eslint",

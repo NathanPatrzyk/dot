@@ -11,6 +11,8 @@ export function getAuth() {
       usePlural: true,
     }),
 
+    trustedOrigins: ["http://localhost:8787", "http://localhost:3000"],
+
     user: {
       additionalFields: {
         status: {

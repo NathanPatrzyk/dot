@@ -1,4 +1,5 @@
 import { LogoutButton } from "@/components/shared/logout-button";
+import { RequestUserDeletionDialog } from "@/components/shared/request-user-deletion-dialog";
 import WeatherWidget from "@/components/shared/weather-widget";
 import { TaskContainer } from "@/components/tasks/task-container";
 import { Button } from "@/components/ui/button";
@@ -18,12 +19,7 @@ export default async function Tasks() {
             <p>Bem-vindo, {user.name}</p>
             <div className="flex gap-1">
               <LogoutButton />
-              <Button
-                className="hover:bg-destructive/10 text-destructive hover:text-destructive focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:hover:bg-destructive/20 dark:focus-visible:ring-destructive/40"
-                variant="ghost"
-              >
-                <UserRoundX /> Excluir conta
-              </Button>
+              <RequestUserDeletionDialog />
             </div>
           </div>
           <h2 className="text-3xl pt-8">

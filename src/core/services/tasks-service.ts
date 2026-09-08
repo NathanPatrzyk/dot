@@ -2,6 +2,10 @@ import { CommonTaskRepository } from "../ports/common-task-repository";
 import { CreateTaskInput } from "@/types/tasks";
 
 export function createTasksService(taskRepository: CommonTaskRepository) {
+  async function getTasks(userId: string) {
+    return taskRepository.findAllByUser(userId);
+  }
+
   async function toggleTask(id: number, userId: string) {
     const task = await taskRepository.findById(id, userId);
 
@@ -20,5 +24,5 @@ export function createTasksService(taskRepository: CommonTaskRepository) {
     return taskRepository.create(input, userId);
   }
 
-  return { toggleTask, deleteTask, createTask };
+  return { getTasks, toggleTask, deleteTask, createTask };
 }
