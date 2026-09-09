@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 
 type TaskFormProps = {
   action: (formData: FormData) => void;
-  pending: boolean;
 };
 
 export function TaskForm({ action }: TaskFormProps) {

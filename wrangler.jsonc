@@ -14,6 +14,9 @@
   "cache": {
     "enabled": true,
   },
+  "vars": {
+    "BETTER_AUTH_URL": "https://dot-todo.pages.dev",
+  },
   "kv_namespaces": [
     {
       "binding": "VINEXT_KV_CACHE",

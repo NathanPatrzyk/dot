@@ -1,9 +1,9 @@
+import { UsersRepository } from "@/core/ports/users.repository";
+import { GetDb } from "./types";
 import { eq } from "drizzle-orm";
-import { users } from "@/db/schema";
-import { getDb } from "./client";
-import { CommonUserRepository } from "@/core/ports/common-user-repository";
+import { users } from "@/db";
 
-export function createSqliteUserRepository(): CommonUserRepository {
+export function createUsersRepository(getDb: GetDb): UsersRepository {
   async function findById(id: string) {
     const db = getDb();
 

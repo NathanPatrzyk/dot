@@ -2,7 +2,7 @@ export type PendingDeletionUser = {
   id: string;
 };
 
-export interface UserDeletionRepository {
+export interface UsersDeletionRepository {
   updateDeletionStatus(
     id: string,
     status: "active" | "pending_deletion",

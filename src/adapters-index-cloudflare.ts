@@ -1,23 +1,21 @@
 import { getDb } from "@/adapters/d1/client";
-import {
-  createD1UserRepository,
-  createD1UserDeletionRepository,
-} from "@/adapters/d1/user-repository-factory";
-import { createD1TaskRepository } from "@/adapters/d1/task-repository-factory";
-import { CommonUserRepository } from "@/core/ports/common-user-repository";
-import { UserDeletionRepository } from "@/core/ports/user-deletion-repository";
-import { CommonTaskRepository } from "@/core/ports/common-task-repository";
+import { UsersRepository } from "@/core/ports/users.repository";
+import { createUsersRepository } from "@/adapters/shared/users.repository";
+import { UsersDeletionRepository } from "@/core/ports/users-deletion.repository";
+import { createUsersDeletionRepository } from "@/adapters/shared/users-deletion.repository";
+import { TasksRepository } from "@/core/ports/tasks.repository";
+import { createTasksRepository } from "@/adapters/shared/tasks.repository";
 
 export { getDb };
 
-export function getUserRepository(): CommonUserRepository {
-  return createD1UserRepository();
+export function getUsersRepository(): UsersRepository {
+  return createUsersRepository(getDb);
 }
 
-export function getUserDeletionRepository(): UserDeletionRepository {
-  return createD1UserDeletionRepository();
+export function getUsersDeletionRepository(): UsersDeletionRepository {
+  return createUsersDeletionRepository(getDb);
 }
 
-export function getTaskRepository(): CommonTaskRepository {
-  return createD1TaskRepository();
+export function getTasksRepository(): TasksRepository {
+  return createTasksRepository(getDb);
 }

@@ -1,15 +1,21 @@
 import { getDb } from "@/adapters/sqlite/client";
-import { createSqliteUserRepository } from "@/adapters/sqlite/user-repository-factory";
-import { createSqliteTaskRepository } from "@/adapters/sqlite/task-repository-factory";
-import { CommonUserRepository } from "@/core/ports/common-user-repository";
-import { CommonTaskRepository } from "@/core/ports/common-task-repository";
+import { UsersRepository } from "@/core/ports/users.repository";
+import { createUsersRepository } from "@/adapters/shared/users.repository";
+import { TasksRepository } from "@/core/ports/tasks.repository";
+import { createTasksRepository } from "@/adapters/shared/tasks.repository";
+import { createUsersDeletionRepository } from "@/adapters/shared/users-deletion.repository";
+import { UsersDeletionRepository } from "@/core/ports/users-deletion.repository";
 
 export { getDb };
 
-export function getUserRepository(): CommonUserRepository {
-  return createSqliteUserRepository();
+export function getUsersRepository(): UsersRepository {
+  return createUsersRepository(getDb);
 }
 
-export function getTaskRepository(): CommonTaskRepository {
-  return createSqliteTaskRepository();
+export function getTasksRepository(): TasksRepository {
+  return createTasksRepository(getDb);
+}
+
+export function getUsersDeletionRepository(): UsersDeletionRepository {
+  return createUsersDeletionRepository(getDb);
 }

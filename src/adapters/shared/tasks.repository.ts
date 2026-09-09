@@ -1,10 +1,10 @@
+import { TasksRepository } from "@/core/ports/tasks.repository";
+import { GetDb } from "./types";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { tasks } from "@/db/schema";
-import { getDb } from "./client";
-import { CommonTaskRepository } from "@/core/ports/common-task-repository";
 import { CreateTaskInput, UpdateTaskInput } from "@/types/tasks";
 
-export function createD1TaskRepository(): CommonTaskRepository {
+export function createTasksRepository(getDb: GetDb): TasksRepository {
   async function findById(id: number, userId: string) {
     const db = getDb();
 

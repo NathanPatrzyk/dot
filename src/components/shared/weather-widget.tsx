@@ -1,6 +1,6 @@
 "use client";
 
-import { WeatherData } from "@/types/weather";
+import { OpenWeatherResponse, WeatherData } from "@/types/weather";
 import {
   Cloud,
   CloudDrizzle,
@@ -59,7 +59,7 @@ export default function WeatherWidget() {
         return;
       }
 
-      const data = await res.json();
+      const data: OpenWeatherResponse = await res.json();
 
       setWeather({
         temperature: data.main.temp,

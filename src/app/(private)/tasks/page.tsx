@@ -2,14 +2,14 @@ import { LogoutButton } from "@/components/shared/logout-button";
 import { RequestUserDeletionDialog } from "@/components/shared/request-user-deletion-dialog";
 import WeatherWidget from "@/components/shared/weather-widget";
 import { TaskContainer } from "@/components/tasks/task-container";
-import { Button } from "@/components/ui/button";
 import { requireSession } from "@/lib/require-session";
 import { getTasks } from "@/queries/tasks";
-import { UserRoundX } from "lucide-react";
 
 export default async function Tasks() {
   const { user } = await requireSession();
   const tasks = await getTasks(user.id);
+
+  const isHomelab = Boolean(process.env.DATABASE_URL);
 
   return (
     <div className="flex flex-col gap-6">
@@ -19,7 +19,7 @@ export default async function Tasks() {
             <p>Bem-vindo, {user.name}</p>
             <div className="flex gap-1">
               <LogoutButton />
-              <RequestUserDeletionDialog />
+              {!isHomelab && <RequestUserDeletionDialog />}
             </div>
           </div>
           <h2 className="text-3xl pt-8">
@@ -27,7 +27,7 @@ export default async function Tasks() {
           </h2>
         </div>
         <div>
-          <WeatherWidget />
+          {process.env.OPENWEATHER_ENABLED === "true" && <WeatherWidget />}
         </div>
       </div>
 

@@ -5,8 +5,8 @@ import { revalidatePath } from "next/cache";
 import { CreateTaskInput } from "@/types/tasks";
 import { ActionState } from "@/types/action-state";
 import { requireSession } from "@/lib/require-session";
-import { createTasksService } from "@/core/services/tasks-service";
-import { getTaskRepository } from "@/adapters";
+import { createTasksService } from "@/core/services/tasks.service";
+import { getTasksRepository } from "@/adapters";
 
 export async function toggleTask(id: number) {
   const { user } = await requireSession();
@@ -15,7 +15,7 @@ export async function toggleTask(id: number) {
     throw new Error("Id inválido.");
   }
 
-  const tasksService = createTasksService(getTaskRepository());
+  const tasksService = createTasksService(getTasksRepository());
   await tasksService.toggleTask(id, user.id);
 
   revalidatePath("/tasks");
@@ -28,7 +28,7 @@ export async function deleteTask(id: number) {
     throw new Error("Id inválido.");
   }
 
-  const tasksService = createTasksService(getTaskRepository());
+  const tasksService = createTasksService(getTasksRepository());
   await tasksService.deleteTask(id, user.id);
 
   revalidatePath("/tasks");
@@ -57,7 +57,7 @@ export async function createTask(
     };
   }
 
-  const tasksService = createTasksService(getTaskRepository());
+  const tasksService = createTasksService(getTasksRepository());
   const task = await tasksService.createTask(parsed.data, user.id);
 
   if (!task) {

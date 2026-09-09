@@ -1,6 +1,6 @@
 import handler from "vinext/server/app-router-entry";
-import { getUserDeletionRepository } from "@/adapters";
-import { createUsersDeletionService } from "@/core/services/users-deletion-service";
+import { getUsersDeletionRepository } from "@/adapters";
+import { createUsersDeletionService } from "@/core/services/users-deletion.service";
 
 export default {
   async fetch(
@@ -16,7 +16,7 @@ export default {
     ctx: ExecutionContext,
   ) {
     const usersDeletionService = createUsersDeletionService(
-      getUserDeletionRepository(),
+      getUsersDeletionRepository(),
     );
     ctx.waitUntil(usersDeletionService.purgeExpiredAccounts());
   },

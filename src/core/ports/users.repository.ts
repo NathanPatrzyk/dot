@@ -4,6 +4,6 @@ export type UserRecord = {
   email: string;
 };
 
-export interface CommonUserRepository {
+export interface UsersRepository {
   findById(id: string): Promise<UserRecord | null>;
 }

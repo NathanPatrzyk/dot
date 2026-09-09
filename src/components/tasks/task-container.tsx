@@ -24,7 +24,6 @@ export function TaskContainer({ tasks }: TaskContainerProps) {
     total,
     completed,
     porcentage,
-    isCreating,
     handleCreate,
     handleToggle,
     handleDelete,
@@ -32,7 +31,7 @@ export function TaskContainer({ tasks }: TaskContainerProps) {
 
   return (
     <>
-      <TaskForm action={handleCreate} pending={isCreating} />
+      <TaskForm action={handleCreate} />
 
       <Progress
         value={porcentage}

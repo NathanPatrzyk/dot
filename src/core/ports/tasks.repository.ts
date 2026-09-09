@@ -6,7 +6,7 @@ export type TaskRecord = {
   isCompleted: boolean;
 };
 
-export interface CommonTaskRepository {
+export interface TasksRepository {
   findById(id: number, userId: string): Promise<TaskRecord | null>;
 
   findAllByUser(userId: string): Promise<TaskRecord[]>;
