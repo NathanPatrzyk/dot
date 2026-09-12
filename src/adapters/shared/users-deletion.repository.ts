@@ -1,9 +1,11 @@
-import { GetDb } from "./types";
+import { GetDb } from "./repository.type";
 import { and, eq, lte } from "drizzle-orm";
 import { users } from "@/db";
 import { UsersDeletionRepository } from "@/core/ports/users-deletion.repository";
 
-export function createUsersDeletionRepository(getDb: GetDb): UsersDeletionRepository {
+export function createUsersDeletionRepository(
+  getDb: GetDb,
+): UsersDeletionRepository {
   async function updateDeletionStatus(
     id: string,
     status: "active" | "pending_deletion",

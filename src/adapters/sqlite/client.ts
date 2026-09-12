@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import * as schema from "@/db/schema";
-import type { AppDatabase } from "@/adapters/shared/types";
+import type { AppDatabase } from "@/adapters/shared/repository.type";
 
 let cached: AppDatabase | undefined;
 

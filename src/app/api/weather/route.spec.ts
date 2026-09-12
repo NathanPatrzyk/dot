@@ -1,78 +1,73 @@
-/**
- * @jest-environment node
- */
-import { GET } from "./route";
+import { GET } from "@/app/api/weather/route";
 
 describe("GET /api/weather", () => {
-  const originalEnv = process.env;
-
   beforeEach(() => {
-    process.env = {
-      ...originalEnv,
-      OPENWEATHER_BASE_URL: "https://api.openweathermap.org/data/2.5/weather",
-      OPENWEATHER_API_KEY: "fake-key",
-    };
-    global.fetch = jest.fn();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ main: { temp: 23.4 } }),
+      } as unknown as Response),
+    );
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
   });
 
-  it("fetches weather data and returns it with status 200", async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        main: { temp: 25.5 },
-        weather: [{ id: 800 }],
-        name: "São Paulo",
-      }),
-    });
+  it("should return 404 when openweather is disabled", async () => {
+    vi.stubEnv("OPENWEATHER_ENABLED", "false");
 
-    const request = new Request(
-      "http://localhost/api/weather?lat=-23.55&lon=-46.63",
+    const response = await GET(
+      new Request("http://localhost/api/weather?lat=-23.5&lon=-46.6"),
     );
-    const response = await GET(request);
-    const body = await response.json();
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      "https://api.openweathermap.org/data/2.5/weather?lat=-23.55&lon=-46.63&units=metric&appid=fake-key",
+    expect(response.status).toBe(404);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("should proxy the openweather response when enabled", async () => {
+    vi.stubEnv("OPENWEATHER_ENABLED", "true");
+    vi.stubEnv(
+      "OPENWEATHER_BASE_URL",
+      "https://api.openweathermap.org/data/2.5/weather",
     );
+    vi.stubEnv("OPENWEATHER_API_KEY", "secret-key");
+
+    const response = await GET(
+      new Request("http://localhost/api/weather?lat=-23.5&lon=-46.6"),
+    );
+
     expect(response.status).toBe(200);
-    expect(body).toEqual({
-      main: { temp: 25.5 },
-      weather: [{ id: 800 }],
-      name: "São Paulo",
-    });
-  });
-
-  it("returns an error with the upstream status when the fetch fails", async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: false,
-      status: 502,
-    });
-
-    const request = new Request(
-      "http://localhost/api/weather?lat=-23.55&lon=-46.63",
+    await expect(response.text()).resolves.toBe(
+      JSON.stringify({ main: { temp: 23.4 } }),
     );
-    const response = await GET(request);
-    const body = await response.json();
-
-    expect(response.status).toBe(502);
-    expect(body).toEqual({ error: "Erro ao buscar dados do clima" });
+    expect(fetch).toHaveBeenCalledWith(
+      "https://api.openweathermap.org/data/2.5/weather?lat=-23.5&lon=-46.6&units=metric&appid=secret-key",
+    );
   });
 
-  it("builds the URL with null when lat/lon are missing", async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: async () => ({}),
-    });
+  it("should return the upstream status when the provider fails", async () => {
+    vi.stubEnv("OPENWEATHER_ENABLED", "true");
+    vi.stubEnv(
+      "OPENWEATHER_BASE_URL",
+      "https://api.openweathermap.org/data/2.5/weather",
+    );
+    vi.stubEnv("OPENWEATHER_API_KEY", "secret-key");
+    vi.mocked(fetch).mockResolvedValue({
+      ok: false,
+      status: 503,
+    } as unknown as Response);
 
-    const request = new Request("http://localhost/api/weather");
-    await GET(request);
+    const response = await GET(
+      new Request("http://localhost/api/weather?lat=-23.5&lon=-46.6"),
+    );
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      "https://api.openweathermap.org/data/2.5/weather?lat=null&lon=null&units=metric&appid=fake-key",
+    expect(response.status).toBe(503);
+    await expect(response.text()).resolves.toBe(
+      JSON.stringify({ error: "Erro ao buscar dados do clima" }),
     );
   });
 });

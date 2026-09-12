@@ -1,5 +1,5 @@
 import { createTask, toggleTask, deleteTask } from "@/actions/tasks";
-import { tasksReducer } from "@/reducers/tasks-reducer";
+import { tasksReducer } from "@/reducers/tasks.reducer";
 import { ActionState } from "@/types/action-state";
 import { TaskView, CreateTaskInput } from "@/types/tasks";
 import { useOptimistic, useTransition } from "react";

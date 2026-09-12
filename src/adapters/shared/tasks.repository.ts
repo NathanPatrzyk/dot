@@ -1,5 +1,5 @@
 import { TasksRepository } from "@/core/ports/tasks.repository";
-import { GetDb } from "./types";
+import { GetDb } from "./repository.type";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { tasks } from "@/db/schema";
 import { CreateTaskInput, UpdateTaskInput } from "@/types/tasks";

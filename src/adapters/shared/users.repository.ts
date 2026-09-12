@@ -1,5 +1,5 @@
 import { UsersRepository } from "@/core/ports/users.repository";
-import { GetDb } from "./types";
+import { GetDb } from "./repository.type";
 import { eq } from "drizzle-orm";
 import { users } from "@/db";
 

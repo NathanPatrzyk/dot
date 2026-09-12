@@ -1,6 +1,6 @@
 {
   "name": "dot",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "scripts": {
     "prepare:cloudflare": "cross-env APP_TARGET=cloudflare tsx src/scripts/prepare-build.ts",
@@ -18,7 +18,8 @@
     "db:migrate:cloudflare:local": "wrangler d1 migrations apply dot-db --local --config dist/server/wrangler.json",
     "db:migrate:homelab": "drizzle-kit migrate --config drizzle.homelab.config.ts",
     "db:studio": "drizzle-kit studio",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "pnpm prepare:homelab && dotenv -e .env.local -- vitest run --bail 1 --coverage"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -45,24 +46,31 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.54.2",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^24.13.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.1.1",
     "@vitejs/plugin-rsc": "^0.5.34",
+    "@vitest/coverage-v8": "^5.0.0",
     "babel-plugin-react-compiler": "1.0.0",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
+    "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.31.10",
     "drizzle-seed": "^0.3.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "jsdom": "^30.0.1",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "tsx": "^4.22.4",
     "typescript": "^5",
     "vite": "^8.2.2",
+    "vitest": "^5.0.0",
     "wrangler": "^4.127.1"
   },
   "type": "module"

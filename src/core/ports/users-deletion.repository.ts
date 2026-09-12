@@ -1,4 +1,4 @@
-export type PendingDeletionUser = {
+export type PendingDeletionUserRecord = {
   id: string;
 };
 
@@ -8,7 +8,7 @@ export interface UsersDeletionRepository {
     status: "active" | "pending_deletion",
     deletionRequestedAt: Date | null,
   ): Promise<void>;
-  findExpiredDeletions(cutoffDate: Date): Promise<PendingDeletionUser[]>;
-  
+  findExpiredDeletions(cutoffDate: Date): Promise<PendingDeletionUserRecord[]>;
+
   purge(id: string): Promise<void>;
 }
