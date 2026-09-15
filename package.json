@@ -11,7 +11,7 @@
     "build:homelab": "pnpm prepare:homelab && next build",
     "start:cloudflare": "wrangler dev --config dist/server/wrangler.json",
     "start:homelab": "pnpm prepare:homelab && next start",
-    "deploy": "vinext-cloudflare deploy --config dist/server/wrangler.json --experimental-warm-cdn-cache",
+    "deploy": "pnpm build:cloudflare && vinext-cloudflare deploy --config dist/server/wrangler.json --experimental-warm-cdn-cache",
     "db:generate:cloudflare": "drizzle-kit generate",
     "db:generate:homelab": "drizzle-kit generate --config drizzle.homelab.config.ts",
     "db:migrate:cloudflare": "wrangler d1 migrations apply dot-db",

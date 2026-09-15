@@ -20,7 +20,7 @@ export function TaskItem({
   isCompleted,
   onToggle,
   onDelete,
-}: TaskItemProps) {
+}: Readonly<TaskItemProps>) {
   return (
     <Field orientation="horizontal" className="group min-w-0">
       <Checkbox

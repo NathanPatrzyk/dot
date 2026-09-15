@@ -2,12 +2,12 @@ import { getSessionCookie } from "better-auth/cookies";
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "./lib/auth";
 
-const publicRoutes = ["/login", "/privacy-policy", "/terms-of-use"];
+const publicRoutes = new Set(["/login", "/privacy-policy", "/terms-of-use"]);
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (publicRoutes.includes(pathname)) {
+  if (publicRoutes.has(pathname)) {
     return NextResponse.next();
   }
 

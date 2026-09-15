@@ -43,7 +43,6 @@ export default defineConfig({
         "**/adapters/index.ts",
         "**/adapters/d1/**",
         "**/adapters/sqlite/**",
-        "**/components/ui/**",
         "**/app/api/auth/**",
       ],
       thresholds: {

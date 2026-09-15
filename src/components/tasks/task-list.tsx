@@ -10,7 +10,11 @@ type TaskListProps = {
   onDelete: (id: number, name: string) => void;
 };
 
-export function TaskList({ tasks, onToggle, onDelete }: TaskListProps) {
+export function TaskList({
+  tasks,
+  onToggle,
+  onDelete,
+}: Readonly<TaskListProps>) {
   return (
     <FieldGroup>
       {tasks.map((task) => (

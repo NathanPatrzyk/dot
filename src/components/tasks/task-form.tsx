@@ -8,7 +8,7 @@ type TaskFormProps = {
   action: (formData: FormData) => void;
 };
 
-export function TaskForm({ action }: TaskFormProps) {
+export function TaskForm({ action }: Readonly<TaskFormProps>) {
   function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 

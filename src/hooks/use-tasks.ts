@@ -10,15 +10,14 @@ export function useTasks(tasks: TaskView[]) {
     tasks,
     tasksReducer,
   );
-  const [isCreating, startCreateTransition] = useTransition();
+  const [, startCreateTransition] = useTransition();
   const [, startTransition] = useTransition();
-
-  const total = optimisticTasks.length;
-  const completed = optimisticTasks.filter((task) => task.isCompleted).length;
-  const porcentage = total === 0 ? 0 : (completed / total) * 100;
 
   const pendingTasks = optimisticTasks.filter((task) => !task.isCompleted);
   const completedTasks = optimisticTasks.filter((task) => task.isCompleted);
+
+  const pending = pendingTasks.length;
+  const completed = completedTasks.length;
 
   function handleCreate(formData: FormData) {
     const name = formData.get("name");
@@ -75,10 +74,8 @@ export function useTasks(tasks: TaskView[]) {
     allTasks: optimisticTasks,
     pendingTasks,
     completedTasks,
-    total,
+    pending,
     completed,
-    porcentage,
-    isCreating,
     handleCreate,
     handleToggle,
     handleDelete,

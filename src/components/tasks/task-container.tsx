@@ -2,28 +2,23 @@
 
 import { useTasks } from "@/hooks/use-tasks";
 import { TaskView } from "@/types/tasks";
-import {
-  Progress,
-  ProgressLabel,
-  ProgressValue,
-} from "@/components/ui/progress";
 import { ListTodo, LayoutList, ListChecks } from "lucide-react";
 import { TabsTrigger, TabsContent, Tabs, TabsList } from "@/components/ui/tabs";
 import { TaskForm } from "@/components/tasks/task-form";
 import { TaskList } from "@/components/tasks/task-list";
+import { DotContainer } from "../dot/dot-container";
 
 type TaskContainerProps = {
   tasks: TaskView[];
 };
 
-export function TaskContainer({ tasks }: TaskContainerProps) {
+export function TaskContainer({ tasks }: Readonly<TaskContainerProps>) {
   const {
     allTasks,
     pendingTasks,
     completedTasks,
-    total,
+    pending,
     completed,
-    porcentage,
     handleCreate,
     handleToggle,
     handleDelete,
@@ -33,16 +28,7 @@ export function TaskContainer({ tasks }: TaskContainerProps) {
     <>
       <TaskForm action={handleCreate} />
 
-      <Progress
-        value={porcentage}
-        className="w-full"
-        indicatorClassName="bg-green-500"
-      >
-        <ProgressLabel>
-          {completed}/{total}
-        </ProgressLabel>
-        <ProgressValue />
-      </Progress>
+      <DotContainer pending={pending} completed={completed} />
 
       <Tabs defaultValue="all" className="flex flex-col gap-6">
         <TabsList variant="line" className="w-full">

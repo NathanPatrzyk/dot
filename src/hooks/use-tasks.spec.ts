@@ -22,21 +22,23 @@ describe("useTasks", () => {
     vi.mocked(deleteTask).mockResolvedValue(undefined);
   });
 
-  it("should derive pending, completed and the completion percentage", () => {
+  it("should derive pending and completed lists and totals", () => {
     const { result } = renderHook(() => useTasks(createTasks()));
 
-    expect(result.current.total).toBe(2);
+    expect(result.current.allTasks).toHaveLength(2);
+    expect(result.current.pending).toBe(1);
     expect(result.current.completed).toBe(1);
-    expect(result.current.porcentage).toBe(50);
     expect(result.current.pendingTasks.map((task) => task.id)).toEqual([1]);
     expect(result.current.completedTasks.map((task) => task.id)).toEqual([2]);
   });
 
-  it("should return a zero percentage when there are no tasks", () => {
+  it("should return zero totals when there are no tasks", () => {
     const { result } = renderHook(() => useTasks([]));
 
-    expect(result.current.porcentage).toBe(0);
+    expect(result.current.pending).toBe(0);
+    expect(result.current.completed).toBe(0);
     expect(result.current.pendingTasks).toEqual([]);
+    expect(result.current.completedTasks).toEqual([]);
   });
 
   it("should not create a task when the name is blank", () => {
@@ -134,6 +136,21 @@ describe("useTasks", () => {
       expect(toast.success).toHaveBeenCalledWith("write-the-tests concluída."),
     );
     expect(toggleTask).toHaveBeenCalledWith(1);
+  });
+
+  it("should toast the reopen message when a completed task is toggled back", async () => {
+    const { result } = renderHook(() => useTasks(createTasks()));
+
+    await act(async () => {
+      result.current.handleToggle(2, "refactor-deletion-service", false);
+    });
+
+    await waitFor(() =>
+      expect(toast.success).toHaveBeenCalledWith(
+        "refactor-deletion-service reaberta.",
+      ),
+    );
+    expect(toggleTask).toHaveBeenCalledWith(2);
   });
 
   it("should toast an error when toggling fails", async () => {
