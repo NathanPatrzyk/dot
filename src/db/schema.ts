@@ -66,6 +66,59 @@ export const taskUpdateSchema = createUpdateSchema(tasks, {
 
 export const taskSelectSchema = createSelectSchema(tasks);
 
+export const categories = sqliteTable("categories", {
+  id: integer("id").primaryKey({
+    autoIncrement: true,
+  }),
+
+  name: text("name").notNull(),
+
+  createdAt: integer("created_at", {
+    mode: "timestamp",
+  })
+    .notNull()
+    .default(sql`(unixepoch())`),
+
+  deletedAt: integer("deleted_at", {
+    mode: "timestamp",
+  }),
+
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+});
+
+export const categoryInsertSchema = createInsertSchema(categories, {
+  name: (schema) =>
+    schema
+      .min(1, "O nome é obrigatório.")
+      .max(255, "O nome deve ter no máximo 255 caracteres."),
+}).omit({
+  id: true,
+  createdAt: true,
+  deletedAt: true,
+  userId: true,
+});
+
+export const categoryUpdateSchema = createUpdateSchema(categories, {
+  name: (schema) => schema.min(1).max(255),
+
+  deletedAt: (schema) =>
+    schema.refine(
+      (date) => date === null || date.getTime() <= Date.now() + 5000,
+      {
+        message: "A data de exclusão não pode ser no futuro.",
+      },
+    ),
+})
+  .omit({
+    id: true,
+    createdAt: true,
+  })
+  .partial();
+
+export const categorySelectSchema = createSelectSchema(categories);
+
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
