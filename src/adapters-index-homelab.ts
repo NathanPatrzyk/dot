@@ -5,6 +5,8 @@ import { TasksRepository } from "@/core/ports/tasks.repository";
 import { createTasksRepository } from "@/adapters/shared/tasks.repository";
 import { createUsersDeletionRepository } from "@/adapters/shared/users-deletion.repository";
 import { UsersDeletionRepository } from "@/core/ports/users-deletion.repository";
+import { CategoriesRepository } from "./core/ports/categories.repository";
+import { createCategoriesRepository } from "./adapters/shared/categories.repository";
 
 export { getDb };
 
@@ -14,6 +16,10 @@ export function getUsersRepository(): UsersRepository {
 
 export function getTasksRepository(): TasksRepository {
   return createTasksRepository(getDb);
+}
+
+export function getCategoriesRepository(): CategoriesRepository {
+  return createCategoriesRepository(getDb);
 }
 
 export function getUsersDeletionRepository(): UsersDeletionRepository {
