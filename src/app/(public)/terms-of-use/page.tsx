@@ -1,6 +1,6 @@
 export default function TermsOfUse() {
   return (
-    <div className="flex flex-col gap-6">
+    <>
       <h2 className="text-3xl pt-8">
         Termos de Uso • <span className="font-semibold">dot</span>
       </h2>
@@ -126,6 +126,6 @@ export default function TermsOfUse() {
         Dúvidas sobre estes termos podem ser enviadas para
         nathanpatrzyk11@gmail.com.
       </p>
-    </div>
+    </>
   );
 }

@@ -29,7 +29,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (!isPendingDeletion && isReactivationPage) {
-    return NextResponse.redirect(new URL("/tasks", request.url));
+    return NextResponse.redirect(new URL("/categories", request.url));
   }
 
   return NextResponse.next();

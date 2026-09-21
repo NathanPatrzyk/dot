@@ -8,6 +8,8 @@ export type CategoryRecord = {
 export interface CategoriesRepository {
   findById(id: number, userId: string): Promise<CategoryRecord | null>;
 
+  findByName(name: string, userId: string): Promise<CategoryRecord | null>;
+
   findAllByUser(userId: string): Promise<CategoryRecord[]>;
 
   create(input: CreateCategoryInput, userId: string): Promise<CategoryRecord>;

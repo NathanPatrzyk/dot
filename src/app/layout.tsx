@@ -39,7 +39,9 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col dark pb-32">
-        <div className="max-w-4xl mx-auto w-full p-4 sm:p-8">{children}</div>
+        <div className="flex flex-col justify-center gap-6 max-w-4xl mx-auto w-full p-4 sm:p-8">
+          {children}
+        </div>
         <Toaster />
       </body>
     </html>

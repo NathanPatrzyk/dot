@@ -16,6 +16,17 @@ export function createCategoriesRepository(getDb: GetDb): CategoriesRepository {
     return category ?? null;
   }
 
+  async function findByName(name: string, userId: string) {
+    const db = getDb();
+
+    const category = await db.query.categories.findFirst({
+      where: and(eq(categories.userId, userId), eq(categories.name, name)),
+      columns: { id: true, name: true },
+    });
+
+    return category ?? null;
+  }
+
   async function findAllByUser(userId: string) {
     const db = getDb();
 
@@ -50,5 +61,5 @@ export function createCategoriesRepository(getDb: GetDb): CategoriesRepository {
       .where(and(eq(categories.id, id), eq(categories.userId, userId)));
   }
 
-  return { findById, findAllByUser, create, update };
+  return { findById, findByName, findAllByUser, create, update };
 }

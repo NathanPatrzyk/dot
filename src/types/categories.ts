@@ -10,3 +10,6 @@ export type UpdateCategoryInput = z.infer<typeof categoryUpdateSchema>;
 
 export type Category = z.infer<typeof categorySelectSchema>;
 export type CategoryView = Omit<Category, "createdAt" | "deletedAt" | "userId">;
+
+export type DefaultCategory = { id: null; name: string };
+export type CategoryViewOrDefault = CategoryView | DefaultCategory;

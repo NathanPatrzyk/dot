@@ -4,7 +4,7 @@ import {
   createUpdateSchema,
 } from "drizzle-zod";
 import { relations, sql } from "drizzle-orm";
-import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, index, unique } from "drizzle-orm/sqlite-core";
 
 export const tasks = sqliteTable("tasks", {
   id: integer("id").primaryKey({
@@ -66,27 +66,31 @@ export const taskUpdateSchema = createUpdateSchema(tasks, {
 
 export const taskSelectSchema = createSelectSchema(tasks);
 
-export const categories = sqliteTable("categories", {
-  id: integer("id").primaryKey({
-    autoIncrement: true,
-  }),
+export const categories = sqliteTable(
+  "categories",
+  {
+    id: integer("id").primaryKey({
+      autoIncrement: true,
+    }),
 
-  name: text("name").notNull(),
+    name: text("name").notNull(),
 
-  createdAt: integer("created_at", {
-    mode: "timestamp",
-  })
-    .notNull()
-    .default(sql`(unixepoch())`),
+    createdAt: integer("created_at", {
+      mode: "timestamp",
+    })
+      .notNull()
+      .default(sql`(unixepoch())`),
 
-  deletedAt: integer("deleted_at", {
-    mode: "timestamp",
-  }),
+    deletedAt: integer("deleted_at", {
+      mode: "timestamp",
+    }),
 
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-});
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  },
+  (table) => [unique().on(table.userId, table.name)],
+);
 
 export const categoryInsertSchema = createInsertSchema(categories, {
   name: (schema) =>

@@ -1,6 +1,6 @@
 export default function PrivacyPolicy() {
   return (
-    <div className="flex flex-col gap-6">
+    <>
       <h2 className="text-3xl pt-8">
         Política de Privacidade • <span className="font-semibold">dot</span>
       </h2>
@@ -166,6 +166,6 @@ export default function PrivacyPolicy() {
         Dúvidas sobre esta política ou sobre o tratamento dos seus dados podem
         ser enviadas para nathanpatrzyk11@gmail.com.
       </p>
-    </div>
+    </>
   );
 }

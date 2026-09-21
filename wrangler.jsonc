@@ -14,15 +14,25 @@
   "cache": {
     "enabled": true,
   },
+  "placement": { "mode": "smart" },
+  "observability": {
+    "enabled": false,
+    "head_sampling_rate": 1,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true,
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true,
+    },
+  },
   "vars": {
     "BETTER_AUTH_URL": "https://dot-todo.pages.dev",
   },
-  "kv_namespaces": [
-    {
-      "binding": "VINEXT_KV_CACHE",
-      "id": "d88dc211b1ba439ba5572162bdbce70a",
-    },
-  ],
   "d1_databases": [
     {
       "binding": "dot_db",

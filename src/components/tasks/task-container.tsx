@@ -19,6 +19,8 @@ export function TaskContainer({ tasks }: Readonly<TaskContainerProps>) {
     completedTasks,
     pending,
     completed,
+    loadingToggleId,
+    loadingDeleteId,
     handleCreate,
     handleToggle,
     handleDelete,
@@ -51,6 +53,8 @@ export function TaskContainer({ tasks }: Readonly<TaskContainerProps>) {
             tasks={allTasks}
             onToggle={handleToggle}
             onDelete={handleDelete}
+            loadingToggleId={loadingToggleId}
+            loadingDeleteId={loadingDeleteId}
           />
         </TabsContent>
 
@@ -59,6 +63,8 @@ export function TaskContainer({ tasks }: Readonly<TaskContainerProps>) {
             tasks={pendingTasks}
             onToggle={handleToggle}
             onDelete={handleDelete}
+            loadingToggleId={loadingToggleId}
+            loadingDeleteId={loadingDeleteId}
           />
         </TabsContent>
 
@@ -67,6 +73,8 @@ export function TaskContainer({ tasks }: Readonly<TaskContainerProps>) {
             tasks={completedTasks}
             onToggle={handleToggle}
             onDelete={handleDelete}
+            loadingToggleId={loadingToggleId}
+            loadingDeleteId={loadingDeleteId}
           />
         </TabsContent>
       </Tabs>

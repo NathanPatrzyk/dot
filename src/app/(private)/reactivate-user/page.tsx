@@ -12,7 +12,7 @@ export default async function ReactivateUser() {
   );
 
   return (
-    <div className="flex flex-col gap-6 items-center justify-center pt-32">
+    <div className="flex flex-col gap-6 max-w-md mx-auto pt-32">
       <h2 className="text-2xl font-semibold">
         Sua conta está marcada para exclusão
       </h2>
@@ -20,7 +20,7 @@ export default async function ReactivateUser() {
         Faltam {daysLeft} {daysLeft === 1 ? "dia" : "dias"} para a exclusão
         definitiva.
       </p>
-      <ReactivateUserButton />
+      <ReactivateUserButton />{" "}
     </div>
   );
 }

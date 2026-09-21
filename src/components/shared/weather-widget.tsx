@@ -47,7 +47,7 @@ function getWeatherIcon(code: number) {
   );
 }
 
-export default function WeatherWidget() {
+export function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
 
   useEffect(() => {
@@ -76,15 +76,19 @@ export default function WeatherWidget() {
   const { bg, label, icon: Icon } = getWeatherIcon(weather.code);
 
   return (
-    <div
-      className={`flex flex-col justify-center gap-2 ${bg} p-3 size-36 rounded-xl border-4 border-neutral-800 text-background`}
-    >
-      <div className="flex gap-1">
-        <Icon className="size-6 shrink-0" />
-        <span className="truncate">{label}</span>
-      </div>
-      <span className="text-4xl">{Math.round(weather.temperature)}°</span>
-      <span className="truncate">{weather.city}</span>
+    <div className="relative flex size-36 shrink-0 flex-col rounded-xl bg-neutral-800 px-2 pb-4 pt-3 text-background">
+      <span className="absolute left-1/2 top-2 h-1 w-10 -translate-x-1/2 rounded-t-xs bg-background" />
+      <span className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-md">
+        <span className={`px-2 flex flex-1 flex-col justify-center gap-0.5 ${bg}`}>
+          <div className="flex gap-1">
+            <Icon className="size-6 shrink-0" />
+            <span className="truncate">{label}</span>
+          </div>
+          <span className="text-4xl">{Math.round(weather.temperature)}°</span>
+          <span className="truncate">{weather.city}</span>
+        </span>
+      </span>
+      <span className="absolute bottom-1 left-1/2 h-2 w-4 -translate-x-1/2 bg-background [clip-path:polygon(0_0,100%_0,50%_100%)]" />
     </div>
   );
 }

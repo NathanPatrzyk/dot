@@ -1,81 +1,82 @@
 import { createTask, toggleTask, deleteTask } from "@/actions/tasks";
-import { tasksReducer } from "@/reducers/tasks.reducer";
 import { ActionState } from "@/types/action-state";
 import { TaskView, CreateTaskInput } from "@/types/tasks";
-import { useOptimistic, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
 export function useTasks(tasks: TaskView[]) {
-  const [optimisticTasks, dispatchOptimistic] = useOptimistic(
-    tasks,
-    tasksReducer,
-  );
-  const [, startCreateTransition] = useTransition();
   const [, startTransition] = useTransition();
+  const [loadingToggleId, setLoadingToggleId] = useState<number | null>(null);
+  const [loadingDeleteId, setLoadingDeleteId] = useState<number | null>(null);
 
-  const pendingTasks = optimisticTasks.filter((task) => !task.isCompleted);
-  const completedTasks = optimisticTasks.filter((task) => task.isCompleted);
+  const pendingTasks = tasks.filter((task) => !task.isCompleted);
+  const completedTasks = tasks.filter((task) => task.isCompleted);
 
   const pending = pendingTasks.length;
   const completed = completedTasks.length;
 
-  function handleCreate(formData: FormData) {
+  async function handleCreate(formData: FormData) {
     const name = formData.get("name");
 
     if (typeof name !== "string" || name.trim().length === 0) {
-      return;
+      return false;
     }
 
-    startCreateTransition(async () => {
-      dispatchOptimistic({
-        type: "create",
-        task: { id: -Date.now(), name, isCompleted: false },
-      });
+    const result = await createTask(initialActionState, formData);
 
-      const result = await createTask(initialActionState, formData);
+    if (result.success) {
+      toast.success(result.message);
+      return true;
+    }
 
-      if (result.success) {
-        toast.success(result.message);
-      } else {
-        toast.error(result.message);
-      }
-    });
+    toast.error(result.message);
+    return false;
   }
 
   function handleToggle(id: number, name: string, value: boolean) {
-    startTransition(async () => {
-      dispatchOptimistic({ type: "toggle", id });
+    const toastId = toast.loading(
+      value ? "Concluindo tarefa..." : "Reabrindo tarefa...",
+    );
+    setLoadingToggleId(id);
 
+    startTransition(async () => {
       try {
         await toggleTask(id);
-
-        toast.success(`${name} ${value ? "concluída" : "reaberta"}.`);
+        toast.success(`${name} ${value ? "concluída" : "reaberta"}.`, {
+          id: toastId,
+        });
       } catch {
-        toast.error("Não foi possível atualizar tarefa.");
+        toast.error("Não foi possível atualizar tarefa.", { id: toastId });
+      } finally {
+        setLoadingToggleId(null);
       }
     });
   }
 
   function handleDelete(id: number, name: string) {
-    startTransition(async () => {
-      dispatchOptimistic({ type: "delete", id });
+    const toastId = toast.loading("Excluindo tarefa...");
+    setLoadingDeleteId(id);
 
+    startTransition(async () => {
       try {
         await deleteTask(id);
-
-        toast.success(`${name} excluída.`);
+        toast.success(`${name} excluída.`, { id: toastId });
       } catch {
-        toast.error("Não foi possível excluir tarefa.");
+        toast.error("Não foi possível excluir tarefa.", { id: toastId });
+      } finally {
+        setLoadingDeleteId(null);
       }
     });
   }
 
   return {
-    allTasks: optimisticTasks,
+    allTasks: tasks,
     pendingTasks,
     completedTasks,
     pending,
     completed,
+    loadingToggleId,
+    loadingDeleteId,
     handleCreate,
     handleToggle,
     handleDelete,
