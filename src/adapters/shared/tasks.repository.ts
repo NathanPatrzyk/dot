@@ -10,7 +10,7 @@ export function createTasksRepository(getDb: GetDb): TasksRepository {
 
     const task = await db.query.tasks.findFirst({
       where: and(eq(tasks.id, id), eq(tasks.userId, userId)),
-      columns: { id: true, name: true, isCompleted: true },
+      columns: { id: true, name: true, isCompleted: true, categoryId: true },
     });
 
     return task ?? null;
@@ -21,7 +21,7 @@ export function createTasksRepository(getDb: GetDb): TasksRepository {
 
     return db.query.tasks.findMany({
       where: and(eq(tasks.userId, userId), isNull(tasks.deletedAt)),
-      columns: { id: true, name: true, isCompleted: true },
+      columns: { id: true, name: true, isCompleted: true, categoryId: true },
       orderBy: desc(tasks.id),
     });
   }

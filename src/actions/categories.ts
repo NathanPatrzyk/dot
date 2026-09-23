@@ -4,9 +4,11 @@ import { getCategoriesRepository } from "@/adapters";
 import { createCategoriesService } from "@/core/services/categories.service";
 import { categoryInsertSchema } from "@/db";
 import { requireSession } from "@/lib/require-session";
+import { getSlug } from "@/lib/slug";
 import { ActionState } from "@/types/action-state";
 import { CreateCategoryInput } from "@/types/categories";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function deleteCategory(id: number) {
   const { user } = await requireSession();
@@ -46,18 +48,9 @@ export async function createCategory(
 
   const categoriesService = createCategoriesService(getCategoriesRepository());
 
+  let category;
   try {
-    const category = await categoriesService.createCategory(
-      parsed.data,
-      user.id,
-    );
-
-    revalidatePath("/categories");
-
-    return {
-      success: true,
-      message: `Categoria ${category.name} criada com sucesso.`,
-    };
+    category = await categoriesService.createCategory(parsed.data, user.id);
   } catch (error) {
     return {
       success: false,
@@ -65,4 +58,7 @@ export async function createCategory(
         error instanceof Error ? error.message : "Erro ao criar categoria.",
     };
   }
+
+  revalidatePath("/categories");
+  redirect(`/categories/${getSlug(category.name)}/tasks`);
 }

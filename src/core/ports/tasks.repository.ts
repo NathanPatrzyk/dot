@@ -4,6 +4,7 @@ export type TaskRecord = {
   id: number;
   name: string;
   isCompleted: boolean;
+  categoryId: number;
 };
 
 export interface TasksRepository {

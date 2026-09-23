@@ -1,16 +1,15 @@
 import { createCategory } from "@/actions/categories";
+import { DEFAULT_CATEGORY } from "@/lib/default-category";
+import { getSlug } from "@/lib/slug";
 import { ActionState } from "@/types/action-state";
 import { CategoryView } from "@/types/categories";
 import { CreateTaskInput } from "@/types/tasks";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
 
-const DEFAULT_CATEGORY = { id: null, name: "Sem título" };
-
 export function useCategories(categories: CategoryView[]) {
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
 
   const allCategories = [DEFAULT_CATEGORY, ...categories];
 
@@ -24,13 +23,9 @@ export function useCategories(categories: CategoryView[]) {
     startTransition(async () => {
       const result = await createCategory(initialActionState, formData);
 
-      if (result.success) {
-        toast.success(result.message);
-        router.refresh();
+      if (!result.success) {
+        toast.error(result.message);
       }
-
-      toast.error(result.message);
-      return;
     });
   }
 

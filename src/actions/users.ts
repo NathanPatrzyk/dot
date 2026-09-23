@@ -24,5 +24,5 @@ export async function cancelUserDeletion() {
   );
   await userDeletionService.cancelDeletion(user.id);
 
-  redirect("/tasks");
+  redirect("/categories");
 }

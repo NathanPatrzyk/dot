@@ -4,7 +4,14 @@ import {
   createUpdateSchema,
 } from "drizzle-zod";
 import { relations, sql } from "drizzle-orm";
-import { sqliteTable, text, integer, index, unique } from "drizzle-orm/sqlite-core";
+import {
+  sqliteTable,
+  text,
+  integer,
+  index,
+  unique,
+} from "drizzle-orm/sqlite-core";
+import z from "zod";
 
 export const tasks = sqliteTable("tasks", {
   id: integer("id").primaryKey({
@@ -18,6 +25,10 @@ export const tasks = sqliteTable("tasks", {
   })
     .notNull()
     .default(false),
+
+  categoryId: integer("category_id").references(() => categories.id, {
+    onDelete: "cascade",
+  }),
 
   createdAt: integer("created_at", {
     mode: "timestamp",
@@ -39,6 +50,7 @@ export const taskInsertSchema = createInsertSchema(tasks, {
     schema
       .min(1, "O nome é obrigatório.")
       .max(255, "O nome deve ter no máximo 255 caracteres."),
+  categoryId: () => z.coerce.number().nullable().optional(),
 }).omit({
   id: true,
   isCompleted: true,
@@ -247,4 +259,12 @@ export const taskRelations = relations(tasks, ({ one }) => ({
     fields: [tasks.userId],
     references: [users.id],
   }),
+  category: one(categories, {
+    fields: [tasks.categoryId],
+    references: [categories.id],
+  }),
+}));
+
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  tasks: many(tasks),
 }));

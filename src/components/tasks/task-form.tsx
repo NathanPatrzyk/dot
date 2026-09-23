@@ -1,6 +1,6 @@
 "use client";
 
-import { PlusIcon } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTransition } from "react";
@@ -37,7 +37,7 @@ export function TaskForm({ action }: Readonly<TaskFormProps>) {
         disabled={isPending}
         className="transition-all duration-200"
       >
-        {isPending ? <Spinner /> : <PlusIcon />} Criar
+        {isPending ? <Spinner /> : <Plus />} Criar
       </Button>
     </form>
   );

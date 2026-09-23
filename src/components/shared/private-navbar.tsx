@@ -3,7 +3,11 @@ import { LogoutButton } from "./logout-button";
 import { RequestUserDeletionDialog } from "./request-user-deletion-dialog";
 import { WeatherWidget } from "./weather-widget";
 
-export async function PrivateNavbar() {
+type PrivateNavbarProps = {
+  title: string;
+};
+
+export async function PrivateNavbar({ title }: PrivateNavbarProps) {
   const { user } = await requireSession();
   const isHomelab = Boolean(process.env.DATABASE_URL);
 
@@ -17,13 +21,15 @@ export async function PrivateNavbar() {
             {!isHomelab && <RequestUserDeletionDialog />}
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-4 pt-4">
+        <div className="flex flex-wrap items-center sm:gap-6 gap-4 pt-8">
           <div className="flex gap-2">
             <div className="h-4 w-4 rounded-full bg-red-500 transition-colors hover:bg-red-600" />
             <div className="h-4 w-4 rounded-full bg-yellow-500 transition-colors hover:bg-yellow-600" />
             <div className="h-4 w-4 rounded-full bg-green-500 transition-colors hover:bg-green-600" />
           </div>
-          <h2 className="text-3xl font-semibold">dot</h2>
+          <h2 className="scroll-m-20 text-3xl tracking-tight">
+            <span className="font-semibold">dot</span> • {title}
+          </h2>
         </div>
       </div>
       <div>

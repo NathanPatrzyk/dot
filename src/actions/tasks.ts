@@ -18,7 +18,7 @@ export async function toggleTask(id: number) {
   const tasksService = createTasksService(getTasksRepository());
   await tasksService.toggleTask(id, user.id);
 
-  revalidatePath("/tasks");
+  revalidatePath("/categories/[slug]/tasks", "page");
 }
 
 export async function deleteTask(id: number) {
@@ -31,7 +31,7 @@ export async function deleteTask(id: number) {
   const tasksService = createTasksService(getTasksRepository());
   await tasksService.deleteTask(id, user.id);
 
-  revalidatePath("/tasks");
+  revalidatePath("/categories/[slug]/tasks", "page");
 }
 
 export async function createTask(
@@ -67,7 +67,7 @@ export async function createTask(
     };
   }
 
-  revalidatePath("/tasks");
+  revalidatePath("/categories/[slug]/tasks", "page");
 
   return {
     success: true,

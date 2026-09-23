@@ -4,7 +4,7 @@ import { TaskView, CreateTaskInput } from "@/types/tasks";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
-export function useTasks(tasks: TaskView[]) {
+export function useTasks(tasks: TaskView[], categoryId: number | null) {
   const [, startTransition] = useTransition();
   const [loadingToggleId, setLoadingToggleId] = useState<number | null>(null);
   const [loadingDeleteId, setLoadingDeleteId] = useState<number | null>(null);
@@ -20,6 +20,10 @@ export function useTasks(tasks: TaskView[]) {
 
     if (typeof name !== "string" || name.trim().length === 0) {
       return false;
+    }
+
+    if (categoryId !== null) {
+      formData.set("categoryId", String(categoryId));
     }
 
     const result = await createTask(initialActionState, formData);

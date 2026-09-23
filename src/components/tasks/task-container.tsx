@@ -10,9 +10,13 @@ import { DotContainer } from "../dot/dot-container";
 
 type TaskContainerProps = {
   tasks: TaskView[];
+  categoryId: number | null;
 };
 
-export function TaskContainer({ tasks }: Readonly<TaskContainerProps>) {
+export function TaskContainer({
+  tasks,
+  categoryId,
+}: Readonly<TaskContainerProps>) {
   const {
     allTasks,
     pendingTasks,
@@ -24,7 +28,7 @@ export function TaskContainer({ tasks }: Readonly<TaskContainerProps>) {
     handleCreate,
     handleToggle,
     handleDelete,
-  } = useTasks(tasks);
+  } = useTasks(tasks, categoryId);
 
   return (
     <>

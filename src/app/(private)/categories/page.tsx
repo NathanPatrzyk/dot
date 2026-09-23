@@ -9,7 +9,7 @@ export default async function Categories() {
 
   return (
     <>
-      <PrivateNavbar />
+      <PrivateNavbar title="Categorias" />
       <CategoryContainer categories={categories} />
     </>
   );

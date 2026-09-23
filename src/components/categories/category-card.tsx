@@ -2,7 +2,6 @@
 
 import { getSlug } from "@/lib/slug";
 import { CategoryViewOrDefault } from "@/types/categories";
-import { Gamepad2, Key } from "lucide-react";
 import Link from "next/link";
 
 type CategoryCardProps = {
@@ -26,11 +25,11 @@ export function CategoryCard({ category }: CategoryCardProps) {
       <span className="absolute left-1/2 top-2 h-1 w-10 -translate-x-1/2 rounded-t-xs bg-background" />
       <span className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-md">
         <span className="relative flex h-8 shrink-0 items-center justify-center bg-green-600">
-          <span className="w-full truncate p-2 text-center text-foreground font-semibold">
+          <span className="w-full truncate p-2 text-center font-semibold">
             dot
           </span>
         </span>
-        <span className="flex flex-col flex-1 px-2 bg-green-500 items-center justify-center font-semibold">
+        <span className="flex flex-col flex-1 px-2 bg-green-500 items-center justify-center font-semibold text-center">
           {category.name}
         </span>
       </span>
