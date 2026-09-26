@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 vi.mock("@/actions/users", () => ({ cancelUserDeletion: vi.fn() }));
@@ -15,18 +15,7 @@ vi.mock("react", async (importOriginal) => {
       const [isPending, setPending] = actual.useState(false);
       const startTransition = (callback: () => unknown) => {
         setPending(true);
-        let result: unknown;
-        try {
-          result = callback();
-        } catch (error) {
-          setPending(false);
-          throw error;
-        }
-        Promise.resolve(result)
-          .catch(() => undefined)
-          .finally(() => {
-            actual.act?.(() => setPending(false));
-          });
+        Promise.resolve(callback()).catch(() => undefined);
       };
       return [isPending, startTransition] as const;
     },
@@ -90,6 +79,8 @@ describe("ReactivateUserButton", () => {
 
     await waitFor(() => expect(button).toBeDisabled());
 
-    resolveDeletion(undefined);
+    await act(async () => {
+      resolveDeletion(undefined);
+    });
   });
 });

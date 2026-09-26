@@ -46,7 +46,7 @@ next-env.d.ts
 # drizzle
 /data
 /drizzle
-/drizzle-homelab
+/drizzle-docker
 /dist/
 .vinext/
 .wrangler/

@@ -23,19 +23,19 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN pnpm build:homelab
+RUN pnpm build:docker
 
 FROM node:24-slim AS runner
 
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV APP_TARGET=homelab
+ENV APP_TARGET=docker
 
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-COPY --from=builder /app/drizzle-homelab ./drizzle-homelab
+COPY --from=builder /app/drizzle-docker ./drizzle-docker
 COPY --from=builder /app/migrate.cjs ./migrate.cjs
 
 COPY --from=builder /app/node_modules ./node_modules

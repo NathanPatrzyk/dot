@@ -41,6 +41,7 @@ describe("tasks actions", () => {
           id: 12,
           name: "my-fantastic-task",
           isCompleted: false,
+          categoryId: 1,
         })),
       });
       vi.mocked(getTasksRepository).mockReturnValue(repository);
@@ -50,7 +51,10 @@ describe("tasks actions", () => {
       expect(repository.update).toHaveBeenCalledWith(12, "john-doe", {
         isCompleted: true,
       });
-      expect(revalidatePath).toHaveBeenCalledWith("/tasks");
+      expect(revalidatePath).toHaveBeenCalledWith(
+        "/categories/[slug]/tasks",
+        "page",
+      );
     });
 
     it("should propagate an error when the task does not exist", async () => {
@@ -77,7 +81,10 @@ describe("tasks actions", () => {
       expect(repository.update).toHaveBeenCalledWith(12, "john-doe", {
         deletedAt: expect.any(Date),
       });
-      expect(revalidatePath).toHaveBeenCalledWith("/tasks");
+      expect(revalidatePath).toHaveBeenCalledWith(
+        "/categories/[slug]/tasks",
+        "page",
+      );
     });
   });
 
@@ -149,7 +156,10 @@ describe("tasks actions", () => {
         { name: "my-fantastic-task" },
         "john-doe",
       );
-      expect(revalidatePath).toHaveBeenCalledWith("/tasks");
+      expect(revalidatePath).toHaveBeenCalledWith(
+        "/categories/[slug]/tasks",
+        "page",
+      );
     });
   });
 });

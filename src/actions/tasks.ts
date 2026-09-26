@@ -53,7 +53,7 @@ export async function createTask(
   if (!parsed.success) {
     return {
       success: false,
-      message: parsed.error.issues[0]?.message ?? "Dados inválidos.",
+      message: parsed.error.issues[0]?.message,
     };
   }
 

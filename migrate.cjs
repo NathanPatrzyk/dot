@@ -11,6 +11,6 @@ fs.mkdirSync(path.dirname(filePath), { recursive: true });
 
 const sqlite = new Database(filePath);
 const db = drizzle(sqlite);
-migrate(db, { migrationsFolder: path.join(__dirname, "drizzle-homelab") });
+migrate(db, { migrationsFolder: path.join(__dirname, "drizzle-docker") });
 sqlite.close();
 console.log("Migrations aplicadas.");

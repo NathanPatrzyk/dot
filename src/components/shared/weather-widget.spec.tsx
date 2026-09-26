@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import WeatherWidget from "@/components/shared/weather-widget";
+import { WeatherWidget } from "@/components/shared/weather-widget";
 
 describe("WeatherWidget", () => {
   beforeEach(() => {

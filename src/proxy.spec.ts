@@ -85,7 +85,7 @@ describe("proxy middleware", () => {
 
     expect(response).toEqual({
       __type: "redirect",
-      url: "http://localhost:3000/tasks",
+      url: "http://localhost:3000/categories",
     });
   });
 
@@ -93,7 +93,7 @@ describe("proxy middleware", () => {
     vi.mocked(getSessionCookie).mockReturnValue("session-id");
     mockAuthSession("active");
 
-    const response = await proxy(request("/tasks"));
+    const response = await proxy(request("/categories"));
 
     expect(response).toEqual({ __type: "next" });
   });

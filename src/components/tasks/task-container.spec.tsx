@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 vi.mock("@/actions/tasks", () => ({
@@ -6,7 +6,13 @@ vi.mock("@/actions/tasks", () => ({
   toggleTask: vi.fn(),
   deleteTask: vi.fn(),
 }));
-vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    loading: vi.fn(() => "toast-id"),
+  },
+}));
 
 import { TaskContainer } from "./task-container";
 import { createTask, deleteTask, toggleTask } from "@/actions/tasks";
@@ -22,53 +28,40 @@ describe("TaskContainer", () => {
     vi.mocked(deleteTask).mockResolvedValue(undefined);
   });
 
-  it("should optimistically add the task on submit", async () => {
+  it("should keep the list unchanged while the creation is pending", async () => {
     vi.mocked(createTask).mockReturnValue(new Promise(() => {}));
     const user = userEvent.setup();
-    const { container } = render(<TaskContainer tasks={[]} />);
+    render(<TaskContainer tasks={[]} categoryId={null} />);
 
     fireEvent.change(screen.getByPlaceholderText("Nova tarefa"), {
       target: { value: "my-fantastic-task" },
     });
     await user.click(screen.getByRole("button", { name: /criar/i }));
 
-    expect(await screen.findByText("my-fantastic-task")).toBeInTheDocument();
-
-    expect(screen.getAllByRole("checkbox")[0]).not.toBeChecked();
     expect(createTask).toHaveBeenCalledWith(
       expect.objectContaining({ success: false, message: "" }),
       expect.any(FormData),
     );
-    expect(container.querySelectorAll('[class*="rounded-full"]')).toHaveLength(
-      1,
-    );
+    expect(screen.queryByText("my-fantastic-task")).not.toBeInTheDocument();
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /criar/i })).toBeDisabled();
+    expect(screen.getByPlaceholderText("Nova tarefa")).toBeDisabled();
   });
 
-  it("should optimistically toggle a task when checked", async () => {
+  it("should keep the task unchecked while the toggle is pending", async () => {
     vi.mocked(toggleTask).mockReturnValue(new Promise(() => {}));
     const user = userEvent.setup();
-    const { container } = render(<TaskContainer tasks={createTasks()} />);
-
-    expect(screen.getByText("write-the-tests")).toBeInTheDocument();
-    expect(
-      container.querySelectorAll('[class*="rounded-full"][class*="bg-input"]'),
-    ).toHaveLength(1);
+    render(<TaskContainer tasks={createTasks()} categoryId={null} />);
 
     await user.click(screen.getAllByRole("checkbox")[0]);
 
-    await waitFor(() =>
-      expect(screen.getAllByRole("checkbox")[0]).toBeChecked(),
-    );
-
     expect(toggleTask).toHaveBeenCalledWith(1);
-    expect(
-      container.querySelectorAll('[class*="rounded-full"][class*="bg-input"]'),
-    ).toHaveLength(0);
+    expect(screen.getAllByRole("checkbox")[0]).not.toBeChecked();
   });
 
   it("should filter the tasks by tab", async () => {
     const user = userEvent.setup();
-    render(<TaskContainer tasks={createTasks()} />);
+    render(<TaskContainer tasks={createTasks()} categoryId={null} />);
 
     expect(screen.getByText("write-the-tests")).toBeInTheDocument();
     expect(screen.getByText("refactor-deletion-service")).toBeInTheDocument();
@@ -86,24 +79,21 @@ describe("TaskContainer", () => {
     expect(screen.getByText("refactor-deletion-service")).toBeInTheDocument();
   });
 
-  it("should optimistically remove a task when deleted", async () => {
+  it("should keep the task in the list while the deletion is pending", async () => {
     vi.mocked(deleteTask).mockReturnValue(new Promise(() => {}));
     const user = userEvent.setup();
-    render(<TaskContainer tasks={createTasks()} />);
+    render(<TaskContainer tasks={createTasks()} categoryId={null} />);
 
     await user.click(screen.getAllByRole("button")[1]);
 
-    await waitFor(() =>
-      expect(screen.queryByText("write-the-tests")).not.toBeInTheDocument(),
-    );
-
     expect(deleteTask).toHaveBeenCalledWith(1);
+    expect(screen.getByText("write-the-tests")).toBeInTheDocument();
     expect(screen.getByText("refactor-deletion-service")).toBeInTheDocument();
   });
 
   it("should not add a task when the name is blank", async () => {
     const user = userEvent.setup();
-    render(<TaskContainer tasks={[]} />);
+    render(<TaskContainer tasks={[]} categoryId={null} />);
 
     await user.click(screen.getByRole("button", { name: /criar/i }));
 

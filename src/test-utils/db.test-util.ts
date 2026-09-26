@@ -6,7 +6,7 @@ import * as schema from "@/db/schema";
 export function createTestDb() {
   const sqlite = new Database(":memory:");
   const db = drizzle(sqlite, { schema });
-  migrate(db, { migrationsFolder: "./drizzle-homelab" });
+  migrate(db, { migrationsFolder: "./drizzle-docker" });
   return { db, sqlite };
 }
 

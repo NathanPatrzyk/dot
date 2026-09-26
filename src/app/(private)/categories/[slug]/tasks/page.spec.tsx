@@ -1,75 +1,111 @@
+vi.mock("next/navigation", () => ({
+  notFound: vi.fn(() => {
+    throw new Error("NEXT_NOT_FOUND");
+  }),
+}));
 vi.mock("@/lib/require-session", () => ({ requireSession: vi.fn() }));
 vi.mock("@/queries/tasks", () => ({ getTasks: vi.fn() }));
-vi.mock("@/components/shared/logout-button", () => ({
-  LogoutButton: () => <button>Sair</button>,
+vi.mock("@/queries/categories", () => ({ getCategories: vi.fn() }));
+
+const { mockPrivateNavbarProps, mockTaskContainerProps } = vi.hoisted(() => ({
+  mockPrivateNavbarProps: [] as { title: string }[],
+  mockTaskContainerProps: [] as {
+    tasks: { id: string; categoryId: number | null }[];
+    categoryId: number | null;
+  }[],
 }));
-vi.mock("@/components/shared/request-user-deletion-dialog", () => ({
-  RequestUserDeletionDialog: () => <div data-testid="request-deletion" />,
+
+vi.mock("@/components/shared/private-navbar", () => ({
+  PrivateNavbar: ({ title }: { title: string }) => {
+    mockPrivateNavbarProps.push({ title });
+    return <div data-testid="private-navbar">{title}</div>;
+  },
 }));
-vi.mock("@/components/shared/weather-widget", () => ({
-  default: () => <div data-testid="weather-widget" />,
-}));
+
 vi.mock("@/components/tasks/task-container", () => ({
-  TaskContainer: ({ tasks }: { tasks: unknown[] }) => (
-    <div data-testid="task-container">{tasks.length}</div>
-  ),
+  TaskContainer: ({
+    tasks,
+    categoryId,
+  }: {
+    tasks: { id: string; categoryId: number | null }[];
+    categoryId: number | null;
+  }) => {
+    mockTaskContainerProps.push({ tasks, categoryId });
+    return <div data-testid="task-container">{tasks.length}</div>;
+  },
 }));
 
 import { render, screen } from "@testing-library/react";
-import Tasks from "@/app/(private)/tasks/page";
+import { notFound } from "next/navigation";
 import { requireSession } from "@/lib/require-session";
 import { getTasks } from "@/queries/tasks";
+import { getCategories } from "@/queries/categories";
+import Tasks from "@/app/(private)/categories/[slug]/tasks/page";
 
 describe("Tasks page", () => {
   beforeEach(() => {
-    vi.stubEnv("DATABASE_URL", "");
-    vi.stubEnv("OPENWEATHER_ENABLED", "false");
     vi.mocked(requireSession).mockResolvedValue({
       user: { id: "john-doe", name: "John Doe" },
     } as never);
-    vi.mocked(getTasks).mockResolvedValue([
-      { id: "t1", title: "Wash the dishes", done: false },
+    vi.mocked(getCategories).mockResolvedValue([
+      { id: 1, name: "Casa" },
+      { id: 2, name: "Trabalho" },
     ] as never);
+    vi.mocked(getTasks).mockResolvedValue([
+      { id: "t1", name: "Lavar a louça", isCompleted: false, categoryId: 1 },
+      { id: "t2", name: "Estudar", isCompleted: true, categoryId: 1 },
+      { id: "t3", name: "Reunião", isCompleted: false, categoryId: 2 },
+      { id: "t4", name: "Sem categoria", isCompleted: false, categoryId: null },
+    ] as never);
+    vi.mocked(notFound).mockClear();
+    mockPrivateNavbarProps.length = 0;
+    mockTaskContainerProps.length = 0;
   });
 
-  afterEach(() => vi.unstubAllEnvs());
+  it("should resolve the category by slug and pass its title to the navbar", async () => {
+    render(await Tasks({ params: Promise.resolve({ slug: "casa" }) }));
 
-  it("should render the welcome and the tasks", async () => {
-    render(await Tasks());
-
-    expect(screen.getByText(/bem-vindo, john doe/i)).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
-      /dot • tarefas/i,
-    );
-    expect(screen.getByTestId("task-container")).toHaveTextContent("1");
+    expect(getCategories).toHaveBeenCalledWith("john-doe");
     expect(getTasks).toHaveBeenCalledWith("john-doe");
+    expect(mockPrivateNavbarProps[0]).toEqual({ title: "Casa" });
+    expect(screen.getByTestId("private-navbar")).toHaveTextContent("Casa");
   });
 
-  it("should show the deletion button when it is not a homelab", async () => {
-    render(await Tasks());
+  it("should pass only the tasks of the matched category", async () => {
+    render(await Tasks({ params: Promise.resolve({ slug: "casa" }) }));
 
-    expect(screen.getByTestId("request-deletion")).toBeInTheDocument();
+    expect(mockTaskContainerProps[0]).toEqual({
+      tasks: [
+        { id: "t1", name: "Lavar a louça", isCompleted: false, categoryId: 1 },
+        { id: "t2", name: "Estudar", isCompleted: true, categoryId: 1 },
+      ],
+      categoryId: 1,
+    });
+    expect(screen.getByTestId("task-container")).toHaveTextContent("2");
   });
 
-  it("should hide the deletion button when it is a homelab", async () => {
-    vi.stubEnv("DATABASE_URL", "postgres://homelab/db");
+  it("should use the default category when the slug is sem-titulo", async () => {
+    render(await Tasks({ params: Promise.resolve({ slug: "sem-titulo" }) }));
 
-    render(await Tasks());
-
-    expect(screen.queryByTestId("request-deletion")).not.toBeInTheDocument();
+    expect(mockPrivateNavbarProps[0]).toEqual({ title: "Sem título" });
+    expect(mockTaskContainerProps[0]).toEqual({
+      tasks: [
+        {
+          id: "t4",
+          name: "Sem categoria",
+          isCompleted: false,
+          categoryId: null,
+        },
+      ],
+      categoryId: null,
+    });
+    expect(screen.getByTestId("task-container")).toHaveTextContent("1");
   });
 
-  it("should hide the weather widget when openweather is disabled", async () => {
-    render(await Tasks());
-
-    expect(screen.queryByTestId("weather-widget")).not.toBeInTheDocument();
-  });
-
-  it("should show the weather widget when openweather is enabled", async () => {
-    vi.stubEnv("OPENWEATHER_ENABLED", "true");
-
-    render(await Tasks());
-
-    expect(screen.getByTestId("weather-widget")).toBeInTheDocument();
+  it("should render notFound when the slug does not match any category", async () => {
+    await expect(
+      Tasks({ params: Promise.resolve({ slug: "inexistente" }) }),
+    ).rejects.toThrow("NEXT_NOT_FOUND");
+    expect(notFound).toHaveBeenCalled();
   });
 });

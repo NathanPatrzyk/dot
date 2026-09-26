@@ -36,7 +36,7 @@ describe("users actions", () => {
   });
 
   describe("cancelUserDeletion", () => {
-    it("should restore the account to active and redirect to /tasks", async () => {
+    it("should restore the account to active and redirect to /categories", async () => {
       const repository = createMockedUsersDeletionRepository();
       vi.mocked(getUsersDeletionRepository).mockReturnValue(repository);
 
@@ -47,7 +47,7 @@ describe("users actions", () => {
         "active",
         null,
       );
-      expect(redirect).toHaveBeenCalledWith("/tasks");
+      expect(redirect).toHaveBeenCalledWith("/categories");
     });
   });
 });

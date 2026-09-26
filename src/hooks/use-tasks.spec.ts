@@ -5,7 +5,13 @@ vi.mock("@/actions/tasks", () => ({
   toggleTask: vi.fn(),
   deleteTask: vi.fn(),
 }));
-vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    loading: vi.fn(() => "toast-id"),
+  },
+}));
 
 import { useTasks } from "@/hooks/use-tasks";
 import { createTask, toggleTask, deleteTask } from "@/actions/tasks";
@@ -54,7 +60,7 @@ describe("useTasks", () => {
     expect(createTask).not.toHaveBeenCalled();
   });
 
-  it("should optimistically add the task while the creation is pending", async () => {
+  it("should keep the list unchanged while the creation is pending", async () => {
     vi.mocked(createTask).mockReturnValue(new Promise(() => {}));
     const { result } = renderHook(() => useTasks([]));
     const formData = new FormData();
@@ -64,16 +70,13 @@ describe("useTasks", () => {
       result.current.handleCreate(formData);
     });
 
-    await waitFor(() => expect(result.current.allTasks).toHaveLength(1));
-    expect(result.current.allTasks[0]).toMatchObject({
-      name: "my-fantastic-task",
-      isCompleted: false,
-    });
     expect(createTask).toHaveBeenCalledWith(
       expect.objectContaining({ success: false, message: "" }),
       formData,
     );
+    expect(result.current.allTasks).toHaveLength(0);
     expect(toast.success).not.toHaveBeenCalled();
+    expect(toast.error).not.toHaveBeenCalled();
   });
 
   it("should toast the success message when the creation succeeds", async () => {
@@ -110,7 +113,7 @@ describe("useTasks", () => {
     );
   });
 
-  it("should optimistically toggle the task while the update is pending", async () => {
+  it("should keep the task open while the toggle is pending", async () => {
     vi.mocked(toggleTask).mockReturnValue(new Promise(() => {}));
     const { result } = renderHook(() => useTasks(createTasks()));
 
@@ -118,11 +121,11 @@ describe("useTasks", () => {
       result.current.handleToggle(1, "write-the-tests", true);
     });
 
-    await waitFor(() =>
-      expect(result.current.allTasks[0].isCompleted).toBe(true),
-    );
     expect(toggleTask).toHaveBeenCalledWith(1);
+    expect(result.current.allTasks[0].isCompleted).toBe(false);
+    expect(result.current.loadingToggleId).toBe(1);
     expect(toast.success).not.toHaveBeenCalled();
+    expect(toast.error).not.toHaveBeenCalled();
   });
 
   it("should toast the completion message when the toggle succeeds", async () => {
@@ -133,7 +136,9 @@ describe("useTasks", () => {
     });
 
     await waitFor(() =>
-      expect(toast.success).toHaveBeenCalledWith("write-the-tests concluída."),
+      expect(toast.success).toHaveBeenCalledWith("write-the-tests concluída.", {
+        id: "toast-id",
+      }),
     );
     expect(toggleTask).toHaveBeenCalledWith(1);
   });
@@ -148,6 +153,7 @@ describe("useTasks", () => {
     await waitFor(() =>
       expect(toast.success).toHaveBeenCalledWith(
         "refactor-deletion-service reaberta.",
+        { id: "toast-id" },
       ),
     );
     expect(toggleTask).toHaveBeenCalledWith(2);
@@ -164,11 +170,12 @@ describe("useTasks", () => {
     await waitFor(() =>
       expect(toast.error).toHaveBeenCalledWith(
         "Não foi possível atualizar tarefa.",
+        { id: "toast-id" },
       ),
     );
   });
 
-  it("should optimistically remove the task while the deletion is pending", async () => {
+  it("should keep the task in the list while the deletion is pending", async () => {
     vi.mocked(deleteTask).mockReturnValue(new Promise(() => {}));
     const { result } = renderHook(() => useTasks(createTasks()));
 
@@ -176,9 +183,11 @@ describe("useTasks", () => {
       result.current.handleDelete(1, "write-the-tests");
     });
 
-    await waitFor(() => expect(result.current.allTasks).toHaveLength(1));
     expect(deleteTask).toHaveBeenCalledWith(1);
+    expect(result.current.allTasks).toHaveLength(2);
+    expect(result.current.loadingDeleteId).toBe(1);
     expect(toast.success).not.toHaveBeenCalled();
+    expect(toast.error).not.toHaveBeenCalled();
   });
 
   it("should toast the deletion message when the deletion succeeds", async () => {
@@ -189,7 +198,9 @@ describe("useTasks", () => {
     });
 
     await waitFor(() =>
-      expect(toast.success).toHaveBeenCalledWith("write-the-tests excluída."),
+      expect(toast.success).toHaveBeenCalledWith("write-the-tests excluída.", {
+        id: "toast-id",
+      }),
     );
     expect(deleteTask).toHaveBeenCalledWith(1);
   });
@@ -205,6 +216,7 @@ describe("useTasks", () => {
     await waitFor(() =>
       expect(toast.error).toHaveBeenCalledWith(
         "Não foi possível excluir tarefa.",
+        { id: "toast-id" },
       ),
     );
   });

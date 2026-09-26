@@ -1,10 +1,8 @@
 import { createCategory } from "@/actions/categories";
 import { DEFAULT_CATEGORY } from "@/lib/default-category";
-import { getSlug } from "@/lib/slug";
 import { ActionState } from "@/types/action-state";
 import { CategoryView } from "@/types/categories";
 import { CreateTaskInput } from "@/types/tasks";
-import { redirect } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
 

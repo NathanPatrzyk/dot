@@ -9,7 +9,7 @@ type PrivateNavbarProps = {
 
 export async function PrivateNavbar({ title }: PrivateNavbarProps) {
   const { user } = await requireSession();
-  const isHomelab = Boolean(process.env.DATABASE_URL);
+  const isSelfHosted = Boolean(process.env.DATABASE_URL);
 
   return (
     <div className="flex sm:flex-row justify-between sm:h-36 h-auto gap-4 flex-col-reverse">
@@ -18,7 +18,7 @@ export async function PrivateNavbar({ title }: PrivateNavbarProps) {
           <p>Bem-vindo, {user.name}</p>
           <div className="flex gap-1">
             <LogoutButton />
-            {!isHomelab && <RequestUserDeletionDialog />}
+            {!isSelfHosted && <RequestUserDeletionDialog />}
           </div>
         </div>
         <div className="flex flex-wrap items-center sm:gap-6 gap-4 pt-8">
