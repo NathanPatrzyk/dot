@@ -2,7 +2,7 @@ vi.mock("next/font/google", () => ({
   Geist: () => ({ variable: "mock-geist" }),
   Geist_Mono: () => ({ variable: "mock-geist-mono" }),
 }));
-vi.mock("@/components/ui/sonner", () => ({
+vi.mock("@/view/components/ui/sonner", () => ({
   Toaster: () => <div data-testid="toaster" />,
 }));
 

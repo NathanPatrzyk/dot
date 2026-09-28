@@ -1,0 +1,165 @@
+import { createMockedTaskRepository } from "@/adapters/repositories/task.repository.mock";
+import type { Task } from "@/core/entities/task";
+
+vi.mock("@/adapters", () => ({ getTaskRepository: vi.fn() }));
+vi.mock("@/adapters/auth/session", () => ({ requireSession: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+
+import { toggleTask, deleteTask, createTask } from "./tasks";
+import { getTaskRepository } from "@/adapters";
+import { requireSession } from "@/adapters/auth/session";
+import { revalidatePath } from "next/cache";
+
+describe("task actions", () => {
+  beforeEach(() => {
+    vi.mocked(getTaskRepository).mockReturnValue(
+      createMockedTaskRepository(),
+    );
+    vi.mocked(requireSession).mockResolvedValue({
+      user: { id: "john-doe" },
+    } as Awaited<ReturnType<typeof requireSession>>);
+  });
+
+  describe("toggleTask", () => {
+    it("should throw when the id is falsy", async () => {
+      await expect(toggleTask(0)).rejects.toThrow("Id inválido.");
+
+      expect(requireSession).toHaveBeenCalledTimes(1);
+      expect(getTaskRepository).not.toHaveBeenCalled();
+      expect(revalidatePath).not.toHaveBeenCalled();
+    });
+
+    it("should throw when the id is not a number", async () => {
+      await expect(toggleTask("12" as unknown as number)).rejects.toThrow(
+        "Id inválido.",
+      );
+    });
+
+    it("should toggle the task and revalidate the tasks path", async () => {
+      const repository = createMockedTaskRepository({
+        findById: vi.fn(async () => ({
+          id: 12,
+          name: "my-fantastic-task",
+          isCompleted: false,
+          categoryId: 1,
+        })),
+      });
+      vi.mocked(getTaskRepository).mockReturnValue(repository);
+
+      await toggleTask(12);
+
+      expect(repository.update).toHaveBeenCalledWith(12, "john-doe", {
+        isCompleted: true,
+      });
+      expect(revalidatePath).toHaveBeenCalledWith(
+        "/categories/[slug]/tasks",
+        "page",
+      );
+    });
+
+    it("should propagate an error when the task does not exist", async () => {
+      await expect(toggleTask(404)).rejects.toThrow("Tarefa não encontrada.");
+
+      expect(getTaskRepository).toHaveBeenCalledTimes(1);
+      expect(revalidatePath).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("deleteTask", () => {
+    it("should throw when the id is invalid", async () => {
+      await expect(deleteTask(0)).rejects.toThrow("Id inválido.");
+
+      expect(getTaskRepository).not.toHaveBeenCalled();
+    });
+
+    it("should delete the task and revalidate the tasks path", async () => {
+      const repository = createMockedTaskRepository();
+      vi.mocked(getTaskRepository).mockReturnValue(repository);
+
+      await deleteTask(12);
+
+      expect(repository.update).toHaveBeenCalledWith(12, "john-doe", {
+        deletedAt: expect.any(Date),
+      });
+      expect(revalidatePath).toHaveBeenCalledWith(
+        "/categories/[slug]/tasks",
+        "page",
+      );
+    });
+  });
+
+  describe("createTask", () => {
+    it("should return invalid when the payload is not a FormData", async () => {
+      const result = await createTask(
+        { success: false, message: "" },
+        {} as unknown as FormData,
+      );
+
+      expect(result).toEqual({ success: false, message: "Dados inválidos." });
+      expect(getTaskRepository).not.toHaveBeenCalled();
+    });
+
+    it("should return the schema error when the name is empty", async () => {
+      const formData = new FormData();
+      formData.set("name", "");
+
+      const result = await createTask(
+        { success: false, message: "" },
+        formData,
+      );
+
+      expect(result).toEqual({
+        success: false,
+        message: "O nome é obrigatório.",
+      });
+      expect(getTaskRepository).not.toHaveBeenCalled();
+    });
+
+    it("should return an error when the repository fails to create the task", async () => {
+      const repository = createMockedTaskRepository({
+        create: vi.fn(
+          async (): Promise<Task> => null as unknown as Task,
+        ),
+      });
+      vi.mocked(getTaskRepository).mockReturnValue(repository);
+      const formData = new FormData();
+      formData.set("name", "my-fantastic-task");
+
+      const result = await createTask(
+        { success: false, message: "" },
+        formData,
+      );
+
+      expect(result).toEqual({
+        success: false,
+        message: "Erro ao criar tarefa.",
+      });
+      expect(revalidatePath).not.toHaveBeenCalled();
+    });
+
+    it("should create the task and revalidate the tasks path", async () => {
+      const repository = createMockedTaskRepository();
+      vi.mocked(getTaskRepository).mockReturnValue(repository);
+      const formData = new FormData();
+      formData.set("name", "my-fantastic-task");
+
+      const result = await createTask(
+        { success: false, message: "" },
+        formData,
+      );
+
+      expect(result).toEqual({
+        success: true,
+        message: "Tarefa my-fantastic-task criada com sucesso.",
+      });
+      expect(repository.create).toHaveBeenCalledWith(
+        { name: "my-fantastic-task" },
+        "john-doe",
+      );
+      expect(revalidatePath).toHaveBeenCalledWith(
+        "/categories/[slug]/tasks",
+        "page",
+      );
+    });
+  });
+});

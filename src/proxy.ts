@@ -1,6 +1,6 @@
+import { getAuthProvider } from "@/adapters";
 import { getSessionCookie } from "better-auth/cookies";
 import { NextRequest, NextResponse } from "next/server";
-import { getAuth } from "./lib/auth";
 
 const publicRoutes = new Set(["/login", "/privacy-policy", "/terms-of-use"]);
 
@@ -17,9 +17,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  const session = await getAuth().api.getSession({
-    headers: request.headers,
-  });
+  const session = await getAuthProvider().getSession(request.headers);
 
   const isPendingDeletion = session?.user.status === "pending_deletion";
   const isReactivationPage = pathname === "/reactivate-user";

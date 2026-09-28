@@ -23,17 +23,20 @@ vi.mock("next/server", () => {
   };
 });
 vi.mock("better-auth/cookies", () => ({ getSessionCookie: vi.fn() }));
-vi.mock("@/lib/auth", () => ({ getAuth: vi.fn() }));
+vi.mock("@/adapters", () => ({ getAuthProvider: vi.fn() }));
 
 import { proxy } from "@/proxy";
 import { NextRequest } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
-import { getAuth } from "@/lib/auth";
+import { getAuthProvider } from "@/adapters";
 
-function mockAuthSession(status: string) {
-  vi.mocked(getAuth).mockReturnValue({
-    api: { getSession: vi.fn(async () => ({ user: { status } })) },
-  } as never);
+function mockAuthSession(status: "active" | "pending_deletion") {
+  vi.mocked(getAuthProvider).mockReturnValue({
+    getSession: vi.fn(async () => ({
+      user: { id: "john-doe", name: "John Doe", email: "john@doe.dev", status, deletionRequestedAt: null },
+      expiresAt: new Date("2026-04-15T12:00:00.000Z"),
+    })),
+  });
 }
 
 const request = (pathname: string) =>
@@ -51,25 +54,25 @@ describe("proxy middleware", () => {
 
       expect(response).toEqual({ __type: "next" });
       expect(getSessionCookie).not.toHaveBeenCalled();
-      expect(getAuth).not.toHaveBeenCalled();
+      expect(getAuthProvider).not.toHaveBeenCalled();
     },
   );
 
   it("should redirect to /login when the session cookie is missing", async () => {
-    const response = await proxy(request("/tasks"));
+    const response = await proxy(request("/categories"));
 
     expect(response).toEqual({
       __type: "redirect",
       url: "http://localhost:3000/login",
     });
-    expect(getAuth).not.toHaveBeenCalled();
+    expect(getAuthProvider).not.toHaveBeenCalled();
   });
 
   it("should redirect a pending-deletion user to /reactivate-user", async () => {
     vi.mocked(getSessionCookie).mockReturnValue("session-id");
     mockAuthSession("pending_deletion");
 
-    const response = await proxy(request("/tasks"));
+    const response = await proxy(request("/categories"));
 
     expect(response).toEqual({
       __type: "redirect",

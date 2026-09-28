@@ -1,8 +1,8 @@
-vi.mock("@/lib/get-session", () => ({ getSession: vi.fn() }));
+vi.mock("@/adapters/auth/session", () => ({ getSession: vi.fn() }));
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
 
 import Home from "@/app/page";
-import { getSession } from "@/lib/get-session";
+import { getSession } from "@/adapters/auth/session";
 import { redirect } from "next/navigation";
 
 describe("Home page", () => {

@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/get-session";
+import { getSession } from "@/adapters/auth/session";
 import { redirect } from "next/navigation";
 
 export default async function Home() {

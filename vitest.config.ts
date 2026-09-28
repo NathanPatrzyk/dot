@@ -37,12 +37,9 @@ export default defineConfig({
         "**/__tests__/**",
         "**/test-utils/**",
         "**/core/ports/**",
-        "**/db/**",
+        "**/adapters/db/**",
         "**/scripts/**",
-        "**/adapters-index-*.ts",
         "**/adapters/index.ts",
-        "**/adapters/d1/**",
-        "**/adapters/sqlite/**",
         "**/app/api/auth/**",
       ],
       thresholds: {

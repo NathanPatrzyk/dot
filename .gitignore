@@ -20,7 +20,7 @@
 
 # production
 /build
-src/adapters/index.ts
+src/adapters/db/client.ts
 
 # misc
 .DS_Store
