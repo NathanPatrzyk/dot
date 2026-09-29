@@ -4,7 +4,7 @@ import { requireSession } from "@/adapters/auth/session";
 import {
   DEFAULT_CATEGORY,
   DEFAULT_CATEGORY_SLUG,
-  getCategorySlug,
+  getSlug,
 } from "@/core/entities/category";
 import { getCategories } from "@/adapters/queries/categories";
 import { getTasks } from "@/adapters/queries/tasks";
@@ -26,7 +26,7 @@ export default async function Tasks({ params }: Readonly<TaskProps>) {
   const category =
     slug === DEFAULT_CATEGORY_SLUG
       ? DEFAULT_CATEGORY
-      : categories.find((item) => getCategorySlug(item.name) === slug);
+      : categories.find((item) => getSlug(item.name) === slug);
 
   if (!category) {
     notFound();

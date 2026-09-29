@@ -1,47 +1,53 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "dot",
-  "compatibility_date": "2026-08-29",
-  "compatibility_flags": ["nodejs_compat"],
-  "workers_dev": false,
-  "preview_urls": false,
-  "main": "worker/index.ts",
-  "assets": {
-    "directory": "dist/client",
-    "not_found_handling": "none",
-    "binding": "ASSETS",
-  },
-  "cache": {
-    "enabled": true,
-  },
-  "placement": { "mode": "smart" },
-  "observability": {
-    "enabled": false,
-    "head_sampling_rate": 1,
-    "logs": {
-      "enabled": true,
-      "head_sampling_rate": 1,
-      "invocation_logs": true,
-      "persist": true,
-    },
-    "traces": {
-      "enabled": true,
-      "head_sampling_rate": 1,
-      "persist": true,
-    },
-  },
-  "vars": {
-    "BETTER_AUTH_URL": "https://dot-todo.pages.dev",
-  },
-  "d1_databases": [
-    {
-      "binding": "dot_db",
-      "database_name": "dot-db",
-      "database_id": "c5575c0e-d96d-4409-8d7b-7fd2b0c130e8",
-      "migrations_dir": "drizzle",
-    },
-  ],
-  "triggers": {
-    "crons": ["0 3 * * *"],
-  },
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "dot",
+	"compatibility_date": "2026-08-29",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"workers_dev": false,
+	"preview_urls": false,
+	"main": "worker/index.ts",
+	"assets": {
+		"directory": "dist/client",
+		"not_found_handling": "none",
+		"binding": "ASSETS",
+	},
+	"cache": {
+		"enabled": true,
+	},
+	"placement": {
+		"mode": "smart"
+	},
+	"observability": {
+		"enabled": false,
+		"head_sampling_rate": 1,
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"invocation_logs": true,
+			"persist": true,
+		},
+		"traces": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"persist": true,
+		},
+	},
+	"vars": {
+		"BETTER_AUTH_URL": "https://dot-todo.pages.dev",
+	},
+	"d1_databases": [
+		{
+			"binding": "dot_db",
+			"database_name": "dot-db",
+			"database_id": "d1511b96-5e46-4605-827f-9e147cad33c3",
+			"migrations_dir": "drizzle",
+		},
+	],
+	"triggers": {
+		"crons": [
+			"0 3 * * *"
+		],
+	},
 }

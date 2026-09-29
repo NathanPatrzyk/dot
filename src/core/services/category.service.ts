@@ -1,7 +1,7 @@
 import {
   CreateCategoryInput,
   DEFAULT_CATEGORY_SLUG,
-  getCategorySlug,
+  getSlug,
 } from "@/core/entities/category";
 import { CategoryRepository } from "@/core/ports/category-repository.port";
 
@@ -11,14 +11,16 @@ export function createCategoryService(categoryRepository: CategoryRepository) {
   }
 
   async function createCategory(input: CreateCategoryInput, userId: string) {
-    if (getCategorySlug(input.name) === DEFAULT_CATEGORY_SLUG) {
+    const slugKey = getSlug(input.name);
+
+    if (slugKey === DEFAULT_CATEGORY_SLUG) {
       throw new Error("Esse nome de categoria não pode ser utilizado.");
     }
 
-    const existing = await categoryRepository.findByName(input.name, userId);
+    const existing = await categoryRepository.findBySlug(slugKey, userId);
 
     if (existing) {
-      throw new Error("Já existe uma categoria com esse nome.");
+      throw new Error("Já existe uma categoria com esse nome/slug.");
     }
 
     return categoryRepository.create(input, userId);

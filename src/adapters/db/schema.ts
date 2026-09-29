@@ -48,6 +48,8 @@ export const categories = sqliteTable(
 
     name: text("name").notNull(),
 
+    slug: text("slug").notNull(),
+
     createdAt: integer("created_at", {
       mode: "timestamp",
     })
@@ -62,7 +64,7 @@ export const categories = sqliteTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
   },
-  (table) => [unique().on(table.userId, table.name)],
+  (table) => [unique().on(table.userId, table.slug)],
 );
 
 export const users = sqliteTable("users", {

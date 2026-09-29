@@ -1,6 +1,10 @@
 import { CategoryRepository } from "@/core/ports/category-repository.port";
 import { GetDb } from "./database.type";
-import { CreateCategoryInput, UpdateCategoryInput } from "@/core/entities/category";
+import {
+  CreateCategoryInput,
+  getSlug,
+  UpdateCategoryInput,
+} from "@/core/entities/category";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { categories } from "@/adapters/db/schema";
 
@@ -10,6 +14,17 @@ export function createCategoryRepository(getDb: GetDb): CategoryRepository {
 
     const category = await db.query.categories.findFirst({
       where: and(eq(categories.id, id), eq(categories.userId, userId)),
+      columns: { id: true, name: true },
+    });
+
+    return category ?? null;
+  }
+
+  async function findBySlug(slug: string, userId: string) {
+    const db = getDb();
+
+    const category = await db.query.categories.findFirst({
+      where: and(eq(categories.userId, userId), eq(categories.slug, slug)),
       columns: { id: true, name: true },
     });
 
@@ -39,10 +54,11 @@ export function createCategoryRepository(getDb: GetDb): CategoryRepository {
 
   async function create(input: CreateCategoryInput, userId: string) {
     const db = getDb();
+    const slug = getSlug(input.name);
 
     const [category] = await db
       .insert(categories)
-      .values({ ...input, userId })
+      .values({ ...input, userId, slug })
       .returning();
 
     return category;
@@ -55,11 +71,17 @@ export function createCategoryRepository(getDb: GetDb): CategoryRepository {
   ) {
     const db = getDb();
 
+    const updateData: typeof input & { slug?: string } = { ...input };
+
+    if (input.name) {
+      updateData.slug = getSlug(input.name);
+    }
+
     await db
       .update(categories)
-      .set(input)
+      .set(updateData)
       .where(and(eq(categories.id, id), eq(categories.userId, userId)));
   }
 
-  return { findById, findByName, findAllByUser, create, update };
+  return { findById, findBySlug, findAllByUser, create, update };
 }

@@ -1,6 +1,6 @@
 {
   "name": "dot",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": true,
   "scripts": {
     "prepare:cloudflare": "cross-env APP_TARGET=cloudflare tsx src/scripts/prepare-build.ts",
@@ -14,7 +14,7 @@
     "deploy": "pnpm build:cloudflare && vinext-cloudflare deploy --config dist/server/wrangler.json --experimental-warm-cdn-cache",
     "db:generate:cloudflare": "drizzle-kit generate",
     "db:generate:docker": "drizzle-kit generate --config drizzle.docker.config.ts",
-    "db:migrate:cloudflare": "wrangler d1 migrations apply dot-db",
+    "db:migrate:cloudflare": "wrangler d1 migrations apply dot-db --remote",
     "db:migrate:cloudflare:local": "wrangler d1 migrations apply dot-db --local --config dist/server/wrangler.json",
     "db:migrate:docker": "drizzle-kit migrate --config drizzle.docker.config.ts",
     "db:studio": "drizzle-kit studio",

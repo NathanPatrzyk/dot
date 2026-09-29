@@ -49,8 +49,13 @@ export const DEFAULT_CATEGORY: DefaultCategory = {
   name: "Sem título",
 };
 
-const slugSchema = z.string().slugify();
-
-export function getCategorySlug(value: string) {
-  return slugSchema.parse(value);
+export function getSlug(value: string) {
+  return (
+    value
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "")
+      .toLowerCase()
+      .match(/[\p{L}\p{N}]+/gu)
+      ?.join("-") ?? DEFAULT_CATEGORY_SLUG
+  );
 }

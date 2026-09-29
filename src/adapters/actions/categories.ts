@@ -5,7 +5,7 @@ import { requireSession } from "@/adapters/auth/session";
 import {
   CreateCategoryInput,
   createCategoryInputSchema,
-  getCategorySlug,
+  getSlug,
 } from "@/core/entities/category";
 import { createCategoryService } from "@/core/services/category.service";
 import { ActionState } from "@/view/types/action-state";
@@ -62,5 +62,5 @@ export async function createCategory(
   }
 
   revalidatePath("/categories");
-  redirect(`/categories/${getCategorySlug(category.name)}/tasks`);
+  redirect(`/categories/${getSlug(category.name)}/tasks`);
 }

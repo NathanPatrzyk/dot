@@ -8,7 +8,7 @@ import type {
 export interface CategoryRepository {
   findById(id: number, userId: string): Promise<CategoryView | null>;
 
-  findByName(name: string, userId: string): Promise<CategoryView | null>;
+  findBySlug(slug: string, userId: string): Promise<CategoryView | null>;
 
   findAllByUser(userId: string): Promise<CategoryView[]>;
 

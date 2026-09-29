@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  DEFAULT_CATEGORY_SLUG,
-  getCategorySlug,
-} from "@/core/entities/category";
+import { DEFAULT_CATEGORY_SLUG, getSlug } from "@/core/entities/category";
 import type { CategoryViewOrDefault } from "@/core/entities/category";
 import Link from "next/link";
 
@@ -17,7 +14,7 @@ export function CategoryCard({ category }: Readonly<CategoryCardProps>) {
       return `/categories/${DEFAULT_CATEGORY_SLUG}/tasks`;
     }
 
-    return `/categories/${getCategorySlug(category.name)}/tasks`;
+    return `/categories/${getSlug(category.name)}/tasks`;
   }
 
   return (

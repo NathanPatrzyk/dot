@@ -2,14 +2,15 @@ import {
   createCategoryInputSchema,
   DEFAULT_CATEGORY,
   DEFAULT_CATEGORY_SLUG,
-  getCategorySlug,
+  getSlug,
   updateCategoryInputSchema,
 } from "@/core/entities/category";
 
 describe("createCategoryInputSchema", () => {
   it("should require a name", () => {
-    expect(createCategoryInputSchema.safeParse({ name: "" }).error?.issues[0])
-      .toMatchObject({ message: "O nome é obrigatório." });
+    expect(
+      createCategoryInputSchema.safeParse({ name: "" }).error?.issues[0],
+    ).toMatchObject({ message: "O nome é obrigatório." });
   });
 });
 
@@ -45,36 +46,36 @@ describe("default category", () => {
 
 describe("getCategorySlug", () => {
   it("should lowercase the value", () => {
-    expect(getCategorySlug("Casa")).toBe("casa");
+    expect(getSlug("Casa")).toBe("casa");
   });
 
   it("should turn spaces into hyphens", () => {
-    expect(getCategorySlug("Minha Categoria")).toBe("minha-categoria");
+    expect(getSlug("Minha Categoria")).toBe("minha-categoria");
   });
 
   it("should strip accents", () => {
-    expect(getCategorySlug("Vídeo Aulas")).toBe("vdeo-aulas");
+    expect(getSlug("Vídeo Aulas")).toBe("video-aulas");
   });
 
   it("should strip non-alphanumeric characters", () => {
-    expect(getCategorySlug("Estudos & Lazer")).toBe("estudos-lazer");
-    expect(getCategorySlug("Trava-língua")).toBe("trava-lngua");
+    expect(getSlug("Estudos & Lazer")).toBe("estudos-lazer");
+    expect(getSlug("Trava-língua")).toBe("trava-lingua");
   });
 
   it("should keep numbers", () => {
-    expect(getCategorySlug("casa 123")).toBe("casa-123");
+    expect(getSlug("casa 123")).toBe("casa-123");
   });
 
   it("should collapse edge whitespace", () => {
-    expect(getCategorySlug("  Casa  ")).toBe("casa");
+    expect(getSlug("  Casa  ")).toBe("casa");
   });
 
   it("should slugify the reserved title", () => {
-    expect(getCategorySlug("Sem Titulo")).toBe("sem-titulo");
-    expect(getCategorySlug("Sem título")).toBe("sem-ttulo");
+    expect(getSlug("Sem Titulo")).toBe("sem-titulo");
+    expect(getSlug("Sem título")).toBe("sem-titulo");
   });
 
   it("should throw for non-string input", () => {
-    expect(() => getCategorySlug(123 as never)).toThrow();
+    expect(() => getSlug(123 as never)).toThrow();
   });
 });
