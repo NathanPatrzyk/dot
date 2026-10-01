@@ -3,6 +3,7 @@ import { TaskContainer } from "@/view/components/tasks/task-container";
 import { requireSession } from "@/adapters/auth/session";
 import {
   DEFAULT_CATEGORY,
+  DEFAULT_CATEGORY_COLOR,
   DEFAULT_CATEGORY_SLUG,
   getSlug,
 } from "@/core/entities/category";
@@ -32,12 +33,17 @@ export default async function Tasks({ params }: Readonly<TaskProps>) {
     notFound();
   }
 
+  const color = "color" in category ? category.color : DEFAULT_CATEGORY_COLOR;
   const categoryTasks = tasks.filter((task) => task.categoryId === category.id);
 
   return (
     <>
       <Header title={category.name} />
-      <TaskContainer tasks={categoryTasks} categoryId={category.id} />
+      <TaskContainer
+        tasks={categoryTasks}
+        categoryId={category.id}
+        color={color}
+      />
     </>
   );
 }

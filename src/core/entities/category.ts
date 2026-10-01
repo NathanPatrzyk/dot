@@ -1,8 +1,25 @@
 import { z } from "zod";
 
+export const CATEGORY_COLORS = [
+  "red",
+  "orange",
+  "yellow",
+  "lime",
+  "green",
+  "cyan",
+  "blue",
+  "purple",
+  "pink",
+] as const;
+
+export type CategoryColor = (typeof CATEGORY_COLORS)[number];
+
+export const DEFAULT_CATEGORY_COLOR: CategoryColor = "green";
+
 export const categorySchema = z.object({
   id: z.number().int(),
   name: z.string(),
+  color: z.enum(CATEGORY_COLORS),
   createdAt: z.date(),
   deletedAt: z.date().nullable(),
   userId: z.string(),
@@ -15,6 +32,7 @@ export const createCategoryInputSchema = z.object({
     .string()
     .min(1, "O nome é obrigatório.")
     .max(255, "O nome deve ter no máximo 255 caracteres."),
+  color: z.enum(CATEGORY_COLORS).default(DEFAULT_CATEGORY_COLOR).optional(),
 });
 
 export type CreateCategoryInput = z.infer<typeof createCategoryInputSchema>;
@@ -25,6 +43,7 @@ export const updateCategoryInputSchema = z.object({
     .min(1, "O nome é obrigatório.")
     .max(255, "O nome deve ter no máximo 255 caracteres.")
     .optional(),
+  color: z.enum(CATEGORY_COLORS).optional(),
   deletedAt: z
     .date()
     .refine((date) => date.getTime() <= Date.now() + 5000, {

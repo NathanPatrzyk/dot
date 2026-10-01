@@ -7,9 +7,5 @@ type DotItemProps = {
 };
 
 export function DotItem({ className }: Readonly<DotItemProps>) {
-  return (
-    <div
-      className={clsx("h-4 w-4 rounded-full bg-green-500", className)}
-    ></div>
-  );
+  return <div className={clsx("h-4 w-4 rounded-full", className)}></div>;
 }

@@ -50,6 +50,8 @@ export const categories = sqliteTable(
 
     slug: text("slug").notNull(),
 
+    color: text("color"),
+
     createdAt: integer("created_at", {
       mode: "timestamp",
     })

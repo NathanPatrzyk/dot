@@ -14,6 +14,13 @@ import { Plus } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/spinner";
+import { Field, FieldGroup, FieldLabel } from "../ui/field";
+import { CategoryColorContainer } from "./category-color-container";
+import { useState } from "react";
+import {
+  CategoryColor,
+  DEFAULT_CATEGORY_COLOR,
+} from "@/core/entities/category";
 
 type CategoryFormDialogProps = {
   isPending: boolean;
@@ -24,6 +31,8 @@ export function CategoryFormDialog({
   isPending,
   action,
 }: Readonly<CategoryFormDialogProps>) {
+  const [color, setColor] = useState(DEFAULT_CATEGORY_COLOR);
+
   function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -55,11 +64,17 @@ export function CategoryFormDialog({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <Input
-            name="name"
-            placeholder="Nome da categoria"
-            disabled={isPending}
-          />
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="name">Nome da Categoria</FieldLabel>
+              <Input
+                name="name"
+                placeholder="Nome da categoria"
+                disabled={isPending}
+              />
+            </Field>
+            <CategoryColorContainer value={color} onChange={setColor} />
+          </FieldGroup>
           <DialogFooter>
             <DialogClose render={<Button variant="outline">Cancelar</Button>} />
             <Button type="submit" disabled={isPending}>

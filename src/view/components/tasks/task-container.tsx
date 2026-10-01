@@ -2,8 +2,14 @@
 
 import { useTasks } from "@/view/hooks/use-tasks";
 import { TaskView } from "@/core/entities/task";
+import type { CategoryColor } from "@/core/entities/category";
 import { ListTodo, LayoutList, ListChecks } from "lucide-react";
-import { TabsTrigger, TabsContent, Tabs, TabsList } from "@/view/components/ui/tabs";
+import {
+  TabsTrigger,
+  TabsContent,
+  Tabs,
+  TabsList,
+} from "@/view/components/ui/tabs";
 import { TaskForm } from "@/view/components/tasks/task-form";
 import { TaskList } from "@/view/components/tasks/task-list";
 import { DotContainer } from "../dot/dot-container";
@@ -11,11 +17,13 @@ import { DotContainer } from "../dot/dot-container";
 type TaskContainerProps = {
   tasks: TaskView[];
   categoryId: number | null;
+  color: CategoryColor;
 };
 
 export function TaskContainer({
   tasks,
   categoryId,
+  color,
 }: Readonly<TaskContainerProps>) {
   const {
     allTasks,
@@ -34,7 +42,7 @@ export function TaskContainer({
     <>
       <TaskForm action={handleCreate} />
 
-      <DotContainer pending={pending} completed={completed} />
+      <DotContainer pending={pending} completed={completed} color={color} />
 
       <Tabs defaultValue="all" className="flex flex-col gap-6">
         <TabsList variant="line" className="w-full">
@@ -55,6 +63,7 @@ export function TaskContainer({
         <TabsContent value="all">
           <TaskList
             tasks={allTasks}
+            color={color}
             onToggle={handleToggle}
             onDelete={handleDelete}
             loadingToggleId={loadingToggleId}
@@ -65,6 +74,7 @@ export function TaskContainer({
         <TabsContent value="pending">
           <TaskList
             tasks={pendingTasks}
+            color={color}
             onToggle={handleToggle}
             onDelete={handleDelete}
             loadingToggleId={loadingToggleId}
@@ -75,6 +85,7 @@ export function TaskContainer({
         <TabsContent value="completed">
           <TaskList
             tasks={completedTasks}
+            color={color}
             onToggle={handleToggle}
             onDelete={handleDelete}
             loadingToggleId={loadingToggleId}
